@@ -289,12 +289,12 @@
                             //this.user.save_local();
                             //this.client.save_local();
                         },
-                        'click #yes' : function () {
+                        'click #yes' : function (event) {
                             event.preventDefault();
                             $("#answears_1").hide();
                             $("#answears_3").show();
                         }, 
-                        'click #no' : function () {
+                        'click #no' : function (event) {
                             event.preventDefault();
                             $("#answears_1").hide();
                             $("#answears_" + 
@@ -304,7 +304,7 @@
                             ).show();     
                         }, 
                         
-                        'click #abort' : function () {
+                        'click #abort' : function (event) {
                             event.preventDefault();
                             this.inteview.add({
                                 question: this.view_state.get('params').q_id,
@@ -312,7 +312,7 @@
                             });
                             this.saveInterview();
                         }, 
-                        'click #save' : function () {
+                        'click #save' : function (event) {
                             event.preventDefault();
                             this.saveInterviewState();
                             this.saveInterview();
