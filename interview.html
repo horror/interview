@@ -19,9 +19,47 @@
 
         <script type="text/template" id="questions">
         <div class="row medium-uncollapse large-collapse">
+            <div class="row">
+                <div class="small-3 columns">
+                    <a href="#!start/" class="button tiny">Сначала</a>
+                    <a href="#!start/" id="save" class="button tiny">Сохранить</a>
+                </div>
+            </div>
             <div class="row panel">
+                <div class="large-10 large-offset-2 columns">    
+                        <h5>Вопрос</h5>
+                </div>
                 <div class="small-6 small-centered columns">
-                <%=questions.get(p.q_id).get("content").replace(/User/g, u.get("name")).replace(/Client/g, c.get("name"))%></div>
+                <%var q = questions.get(p.q_id)%>
+                <%=q.get("content").replace(/User/g, u.get("name")).replace(/Client/g, c.get("name"))%></div>
+                
+                <div class="large-10 large-offset-2 columns">    
+                        <h5>Ответы</h5>
+                </div>
+                <div class="row" id="answears_1" >
+                    <div class="large-9 large-offset-3 columns">
+                        <a id="yes" href="#" class="button tiny success">Да</a>
+                        <a id="no" href="#" class="button tiny secondary">Нет</a>    
+                    </div>
+                </div>
+                <div class="row" id="answears_2" style="display:none">
+                    <%_.each(q.get("answears"), function (a) {%>
+                        <div class="large-9 large-offset-3 columns">
+                            <input type="<%=q.getType()%>" id="<%=a.id%>" name="answears" value="<%=a.id%>"><label for="<%=a.id%>"><%=a.get("content")%></label>
+                        </div>
+                    <%})%>
+                </div>
+                <div class="row" id="answears_3" style="display:none">
+                    <div class="large-9 large-offset-3 columns">
+                        <span class="success round label">Ура! Спрашиваем дальше!</span>
+                    </div>
+                </div>
+                <div class="row" id="answears_4" style="display:none">
+                    <div class="large-9 large-offset-3 columns">
+                        <span class="secondary round label">Ну вот! =(</span>
+                        <a href="" id="abort" class="button secondary">Закончить</a>
+                    </div>
+                </div>
             </div>
             <%var another_q;%>
             <div class="row">
@@ -32,7 +70,7 @@
                 </div>
                 <div class="small-6 columns text-center">
                     <% if ((another_q = questions.get(p.q_id).getRelative(1)) != undefined) {%>
-                        <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav">Следующий</a>
+                        <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav next">Следующий</a>
                     <% } %>
                 </div>
             </div>
@@ -142,16 +180,37 @@
 
                     initialize: function (options) {
                         $.extend(this, options);
-
+                        
+                        var AModel = Backbone.Model.extend({});
+                        var ACollection = Backbone.Collection.extend({
+                            model: AModel,
+                            url: '/?controller=interview&action=get_answears',
+                        });
+                        
                         var QModel = Backbone.Model.extend({
+                            defaults: {
+                                answears: [],
+                                types: ["radio", "checkbox"]
+                            },
+                            getType: function() {
+                                return this.get("types")[this.get("type")];
+                            },
                             getRelative: function(direction) {
                                 return this.collection.at(this.collection.indexOf(this) + direction);
                             }
                         });
-
                         var QCollection = Backbone.Collection.extend({
                             model: QModel,
                             url: '/?controller=interview&action=get_questions',
+                            add_answears: function (answs) {
+                                var self = this;
+                                this.each(function (q) {
+                                    q.set({answears: []});
+                                })
+                                answs.each(function (a) {
+                                    self.get(a.get("question_id")).get("answears").push(a);
+                                })
+                            }
                         });
                         
                         var UserModel = Backbone.Model.extend({
@@ -163,28 +222,32 @@
                             //localStorage: new Backbone.LocalStorage("client")
                         });
 
+                        var InterviewModel = Backbone.Model.extend({
+                            //localStorage: new Backbone.LocalStorage("client")
+                            defaults: {
+                                question: null,
+                                answear: null,
+                            },
+                        });
                         var InterviewCollection = Backbone.Collection.extend({
-                            model: QModel,
-                            url: '/?controller=interview&action=save_interview',
+                            model: InterviewModel,
                             id: 1,
-                            save: function(){
-                                Backbone.sync('update', this, {
-                                    ajaxSync: true,
+                            url: '/?controller=interview&action=save_interview',
+                            save: function() {
+                                Backbone.sync('create', this, {
                                     success: function() {
                                         console.log('Saved!');
-                                    },
-                                    error: function() {
-                                        console.log('sync error!');
-                                    },
+                                    }
                                 });
-                            },
-                            save_local: function(){
-                                Backbone.sync('update', this, {});
-                            },
+                            }
+                            //save_local: function(){
+                            //    Backbone.sync('update', this, {});
+                            //},
                             //localStorage: new Backbone.LocalStorage("interview")
                         });
 
                         this.question_list = new QCollection();
+                        this.answears_list = new ACollection();
                         this.inteview = new InterviewCollection();
                         //this.inteview.fetch();
                         this.user = new UserModel({id: 1});
@@ -194,17 +257,66 @@
                         this.view_state.bind('change', this.refresh, this);
                         //this.interview.bind('add remove', this.refresh, this);
                     },
+                    
+                    saveInterviewState: function () {
+                        var searchIDs = $("input:checkbox:checked").map(function(){
+                            return $(this).val();
+                        }).get();
+                        if (searchIDs.length === 0)
+                            searchIDs.push(0);
+                        this.inteview.add({
+                            question: this.view_state.get('params').q_id,
+                            answear: searchIDs
+                        });
+                    },
+                    
+                    saveInterview: function () {
+                        this.inteview.save();
+                    },
 
                     events: {
                         'click .nav' : function () {
-                            this.inteview.save_local();
+                            //this.inteview.save_local();
                         },
+                        
+                        'click .next' : function () {
+                            this.saveInterviewState();
+                        },
+                        
                         'click .start' : function () {
                             this.user.set({name: $("#user_name").val()});
                             this.client.set({name: $("#client_name").val()});
                             //this.user.save_local();
                             //this.client.save_local();
-                        }
+                        },
+                        'click #yes' : function () {
+                            event.preventDefault();
+                            $("#answears_1").hide();
+                            $("#answears_3").show();
+                        }, 
+                        'click #no' : function () {
+                            event.preventDefault();
+                            $("#answears_1").hide();
+                            $("#answears_" + 
+                                (this.question_list.get(this.view_state.get('params').q_id).get("answears").length !== 0 ?
+                                "2" :
+                                "4")
+                            ).show();     
+                        }, 
+                        
+                        'click #abort' : function () {
+                            event.preventDefault();
+                            this.inteview.add({
+                                question: this.view_state.get('params').q_id,
+                                answear: -1
+                            });
+                            this.saveInterview();
+                        }, 
+                        'click #save' : function () {
+                            event.preventDefault();
+                            this.saveInterviewState();
+                            this.saveInterview();
+                        }, 
                     },
                     
                 
@@ -221,8 +333,16 @@
                                             success: function(data) {
                                                 if (self.view_state.get("params").q_id === null)
                                                     self.view_state.get("params").q_id = data.first().get("id");
-                                                self.render({questions: self.question_list, c: self.client});
-
+                                                self.answears_list.fetch({
+                                                    dataType: "json",
+                                                    success: function(data) {
+                                                        self.question_list.add_answears(data);
+                                                        self.render({questions: self.question_list, c: self.client});
+                                                    },
+                                                    error: function() {
+                                                        console.log('error');
+                                                    }
+                                                });                                              
                                                 console.log('success');
                                             },
                                             error: function() {
