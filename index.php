@@ -20,7 +20,7 @@ if (isset($_GET['controller']) && isset($_GET['action']))
     if (!isset($_SESSION['loggined']) && $_GET['controller'] != "users")
         header('Location: /?controller=users&action=login');
 
-    if (isset($_SESSION['loggined']) && $_GET['controller'] == "users")
+    if (isset($_SESSION['loggined']) && $_GET['action'] == "login")
         header('Location: /interview.html');
 
     $controller = $_GET['controller'] . "_controller";

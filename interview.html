@@ -2,6 +2,10 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        
+        <link type="text/css" href="/css/normalize.css" rel="stylesheet" />
+        <link type="text/css" href="/css/foundation.min.css" rel="stylesheet" />
+                    
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
@@ -14,14 +18,47 @@
         </style>
 
         <script type="text/template" id="questions">
-            <%=questions.get(p.q_id).get("content")%>
+        <div class="row medium-uncollapse large-collapse">
+            <div class="row panel">
+                <div class="small-6 small-centered columns">
+                <%=questions.get(p.q_id).get("content").replace(/User/g, u.get("name")).replace(/Client/g, c.get("name"))%></div>
+            </div>
             <%var another_q;%>
-            <% if ((another_q = questions.get(p.q_id).getRelative(-1)) != undefined) {%>
-                <a href="#!questions/<%=another_q.id%>/" class="nav">Предидущий</a>
-            <% } %>
-            <% if ((another_q = questions.get(p.q_id).getRelative(1)) != undefined) {%>
-                <a href="#!questions/<%=another_q.id%>/" class="nav">Следующий</a>
-            <% } %>
+            <div class="row">
+                <div class="small-6 columns text-center">
+                    <% if ((another_q = questions.get(p.q_id).getRelative(-1)) != undefined) {%>
+                        <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav">Предидущий</a>
+                    <% } %>
+                </div>
+                <div class="small-6 columns text-center">
+                    <% if ((another_q = questions.get(p.q_id).getRelative(1)) != undefined) {%>
+                        <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav">Следующий</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>   
+        </script>
+        
+        <script type="text/template" id="start">
+        <div class="row medium-uncollapse large-collapse">
+          <div class="row">
+            <div class="small-6 small-centered columns">
+              <label>Вы представляетесь
+                <input id="user_name" type="text" placeholder="" value="<%=u.get('name')%>" />
+              </label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="small-6 small-centered columns">
+              <label>Берете интервью у клиента
+                <input id="client_name" type="text" placeholder="Имя клиента" value="<%=c.get('name')%>" />
+              </label>
+            </div>
+          </div>
+            <div class="small-12 small-centered columns text-center">
+                <a href="#!questions/" class="button radius nav start">Начать интервью</a>
+            </div>
+        </div>   
         </script>
 
         <script>
@@ -41,6 +78,7 @@
 
                     routes: {
                         "!questions/(:id/)": "show_questions",
+                        "!start/": "show_start",
                     },
 
                     show_questions: function (id) {
@@ -52,10 +90,19 @@
                         });
                     },
                     
+                    show_start: function () {
+                        this.view_state.set({
+                            state: "start"
+                        });
+                    },
+                    
                     url_generators: {
                         questions: function (vs) {
                             var id = vs.get("params").q_id;
                             return "!questions/" + (id != null ? (id + "/") : "");
+                        },
+                        start: function () {
+                            return "!start/"
                         }
                     },
 
@@ -106,6 +153,15 @@
                             model: QModel,
                             url: '/?controller=interview&action=get_questions',
                         });
+                        
+                        var UserModel = Backbone.Model.extend({
+                            //localStorage: new Backbone.LocalStorage("user"),
+                            url: '/?controller=users&action=get_current',
+                        });
+                        
+                        var ClientModel = Backbone.Model.extend({
+                            //localStorage: new Backbone.LocalStorage("client")
+                        });
 
                         var InterviewCollection = Backbone.Collection.extend({
                             model: QModel,
@@ -125,38 +181,65 @@
                             save_local: function(){
                                 Backbone.sync('update', this, {});
                             },
-                            localStorage: new Backbone.LocalStorage("interview")
+                            //localStorage: new Backbone.LocalStorage("interview")
                         });
 
                         this.question_list = new QCollection();
                         this.inteview = new InterviewCollection();
-                        this.inteview.fetch();
-                        this.view_state.bind('change:state', this.refresh, this);
-                        var self = this;
-                        this.view_state.bind('change:params', function() {                        
-                            self.render({questions: self.question_list});
-                        }, this);
+                        //this.inteview.fetch();
+                        this.user = new UserModel({id: 1});
+                        //this.user.fetch();
+                        this.client = new ClientModel({id: 1});
+                        //this.client.fetch();
+                        this.view_state.bind('change', this.refresh, this);
                         //this.interview.bind('add remove', this.refresh, this);
                     },
 
                     events: {
-                        'click .nav' : function (event) {
+                        'click .nav' : function () {
                             this.inteview.save_local();
+                        },
+                        'click .start' : function () {
+                            this.user.set({name: $("#user_name").val()});
+                            this.client.set({name: $("#client_name").val()});
+                            //this.user.save_local();
+                            //this.client.save_local();
                         }
                     },
+                    
+                
 
                     refresh: function () {
                         var self = this;
-                        self.question_list.fetch({
+                        self.user.fetch({
                             dataType: "json",
                             success: function(data) {
-                                if (self.view_state.get("params").q_id == null)
-                                    self.view_state.get("params").q_id = data.first().get("id");
-                                self.render({questions: self.question_list});
-                                
-                                console.log('success');
+                                switch(self.view_state.get("state")) {
+                                    case "questions":
+                                        self.question_list.fetch({
+                                            dataType: "json",
+                                            success: function(data) {
+                                                if (self.view_state.get("params").q_id === null)
+                                                    self.view_state.get("params").q_id = data.first().get("id");
+                                                self.render({questions: self.question_list, c: self.client});
+
+                                                console.log('success');
+                                            },
+                                            error: function() {
+                                                console.log('error');
+                                            }
+                                        });
+                                        break;
+                                    case "start":
+                                        self.render({c: self.client});
+                                        break;
+                                    default: 
+                                        self.render({});
+                                        break;
+                                }
                             },
                             error: function() {
+                                location.href = "/";
                                 console.log('error');
                             }
                         });
@@ -164,7 +247,7 @@
 
                     render: function(params){
                         $(this.el).html(
-                            _.template($('#' + this.view_state.get('state')).html())($.extend(params, {p: this.view_state.get('params')})) 
+                            _.template($('#' + this.view_state.get('state')).html())($.extend(params, {p: this.view_state.get('params')}, {u: this.user})) 
                         );
 
                         return this;
@@ -182,7 +265,7 @@
                     var view_state = new self.View_state();
                     var router = new self.Router({ view_state: view_state });
 
-                    view_state.bind("change:state", function () {
+                    view_state.bind("change", function () {
                         router.navigate(router.generate_url());
                     });
 
@@ -192,7 +275,7 @@
                     });
 
                     Backbone.history.start();
-                    view.start('!questions/');
+                    view.start('!start/');
                 }
             }
 

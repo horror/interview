@@ -11,4 +11,10 @@ class db {
         $row->execute($params);
         return $row->fetch()[0];
     }
+    
+    public static function exec_row($handler, $query, $params) {
+        $row = $handler->prepare($query);
+        $row->execute($params);
+        return $row->fetch(PDO::FETCH_ASSOC);
+    }
 }
