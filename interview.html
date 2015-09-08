@@ -1,0 +1,207 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone-localstorage.js/1.1.16/backbone.localStorage-min.js"></script>
+        <title>Интервью с клиентом</title>
+        <style>
+            li {
+                cursor: pointer;
+            }
+        </style>
+
+        <script type="text/template" id="questions">
+            <%=questions.get(p.q_id).get("content")%>
+            <%var another_q;%>
+            <% if ((another_q = questions.get(p.q_id).getRelative(-1)) != undefined) {%>
+                <a href="#!questions/<%=another_q.id%>/" class="nav">Предидущий</a>
+            <% } %>
+            <% if ((another_q = questions.get(p.q_id).getRelative(1)) != undefined) {%>
+                <a href="#!questions/<%=another_q.id%>/" class="nav">Следующий</a>
+            <% } %>
+        </script>
+
+        <script>
+            var APP = {
+                View_state: Backbone.Model.extend({
+                    defaults: {
+                        state: null,
+                        params: null
+                    },
+                }),
+
+                Router: Backbone.Router.extend({
+
+                    initialize: function (options) {
+                        $.extend(this, options);
+                    },
+
+                    routes: {
+                        "!questions/(:id/)": "show_questions",
+                    },
+
+                    show_questions: function (id) {
+                        this.view_state.set({
+                            state: "questions",
+                            params: {
+                                q_id: id,
+                            }
+                        });
+                    },
+                    
+                    url_generators: {
+                        questions: function (vs) {
+                            var id = vs.get("params").q_id;
+                            return "!questions/" + (id != null ? (id + "/") : "");
+                        }
+                    },
+
+                    generate_url: function() {
+                        var vs = this.view_state;
+                        return this.url_generators[vs.get("state")](vs);
+                    },
+
+                    current : function() {
+                        var Router = this,
+                                fragment = Backbone.history.fragment,
+                                routes = _.pairs(Router.routes),
+                                route = null, params = null, matched;
+
+                        matched = _.find(routes, function(handler) {
+                            route = _.isRegExp(handler[0]) ? handler[0] : Router._routeToRegExp(handler[0]);
+                            return route.test(fragment);
+                        });
+
+                        if(matched) {
+                            // NEW: Extracts the params using the internal
+                            // function _extractParameters
+                            params = Router._extractParameters(route, fragment);
+                            route = matched[1];
+                        }
+
+                        return {
+                            route : route,
+                            fragment : fragment,
+                            params : params
+                        };
+                    }
+                }),
+
+                View_logic: Backbone.View.extend({
+                    el: "#wrapper",
+
+                    initialize: function (options) {
+                        $.extend(this, options);
+
+                        var QModel = Backbone.Model.extend({
+                            getRelative: function(direction) {
+                                return this.collection.at(this.collection.indexOf(this) + direction);
+                            }
+                        });
+
+                        var QCollection = Backbone.Collection.extend({
+                            model: QModel,
+                            url: '/?controller=interview&action=get_questions',
+                        });
+
+                        var InterviewCollection = Backbone.Collection.extend({
+                            model: QModel,
+                            url: '/?controller=interview&action=save_interview',
+                            id: 1,
+                            save: function(){
+                                Backbone.sync('update', this, {
+                                    ajaxSync: true,
+                                    success: function() {
+                                        console.log('Saved!');
+                                    },
+                                    error: function() {
+                                        console.log('sync error!');
+                                    },
+                                });
+                            },
+                            save_local: function(){
+                                Backbone.sync('update', this, {});
+                            },
+                            localStorage: new Backbone.LocalStorage("interview")
+                        });
+
+                        this.question_list = new QCollection();
+                        this.inteview = new InterviewCollection();
+                        this.inteview.fetch();
+                        this.view_state.bind('change:state', this.refresh, this);
+                        var self = this;
+                        this.view_state.bind('change:params', function() {                        
+                            self.render({questions: self.question_list});
+                        }, this);
+                        //this.interview.bind('add remove', this.refresh, this);
+                    },
+
+                    events: {
+                        'click .nav' : function (event) {
+                            this.inteview.save_local();
+                        }
+                    },
+
+                    refresh: function () {
+                        var self = this;
+                        self.question_list.fetch({
+                            dataType: "json",
+                            success: function(data) {
+                                if (self.view_state.get("params").q_id == null)
+                                    self.view_state.get("params").q_id = data.first().get("id");
+                                self.render({questions: self.question_list});
+                                
+                                console.log('success');
+                            },
+                            error: function() {
+                                console.log('error');
+                            }
+                        });
+                    },
+
+                    render: function(params){
+                        $(this.el).html(
+                            _.template($('#' + this.view_state.get('state')).html())($.extend(params, {p: this.view_state.get('params')})) 
+                        );
+
+                        return this;
+                    },
+
+                    start: function (default_url) {
+                        var current = this.router.current();
+                        this.router.navigate(current.params != null ? current.fragment : default_url, {trigger: true});
+                    }
+                }),
+
+                display : function () {
+                    var self = this;
+
+                    var view_state = new self.View_state();
+                    var router = new self.Router({ view_state: view_state });
+
+                    view_state.bind("change:state", function () {
+                        router.navigate(router.generate_url());
+                    });
+
+                    var view = new self.View_logic({
+                        view_state: view_state,
+                        router: router,
+                    });
+
+                    Backbone.history.start();
+                    view.start('!questions/');
+                }
+            }
+
+            $(function() {
+                APP.display();
+            });
+        </script>
+    </head>
+    <body>
+    <div id="wrapper"></div>
+    </body>
+</html>
