@@ -7,9 +7,9 @@ class interview_controller extends controller
         $this->view->render('json', $q);
     }
     
-    public function get_answears_action($params)
+    public function get_answers_action($params)
     {
-        $a = db::exec($this->db, "SELECT id, question_id, content FROM i_answears", null);
+        $a = db::exec($this->db, "SELECT id, question_id, content FROM i_answers", null);
         $this->view->render('json', $a);
     }
     
@@ -22,10 +22,10 @@ class interview_controller extends controller
         $curr_meta = db::last_id($this->db);
         $interview = $data["interview"];
         foreach ($interview as $i) 
-            foreach ($i["answear"] as $a)
-                db::exec($this->db, "INSERT INTO i_interview (question_id, answear, meta_id) VALUES(:question_id, :answear, :meta_id)", [
+            foreach ($i["answer"] as $a)
+                db::exec($this->db, "INSERT INTO i_interview (question_id, answer, meta_id) VALUES(:question_id, :answer, :meta_id)", [
                     ':question_id' => $i["question_id"],
-                    ':answear' => $a,
+                    ':answer' => $a,
                     ':meta_id' => $curr_meta
                 ]);
         

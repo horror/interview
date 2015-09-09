@@ -82,12 +82,12 @@ var APP = {
             var AModel = Backbone.Model.extend({});
             var ACollection = Backbone.Collection.extend({
                 model: AModel,
-                url: '/?controller=interview&action=get_answears',
+                url: '/?controller=interview&action=get_answers',
             });
 
             var QModel = Backbone.Model.extend({
                 defaults: {
-                    answears: [],
+                    answers: [],
                     types: ["radio", "checkbox"]
                 },
                 getType: function() {
@@ -100,13 +100,13 @@ var APP = {
             var QCollection = Backbone.Collection.extend({
                 model: QModel,
                 url: '/?controller=interview&action=get_questions',
-                add_answears: function (answs) {
+                add_answers: function (answs) {
                     var self = this;
                     this.each(function (q) {
-                        q.set({answears: []});
+                        q.set({answers: []});
                     })
                     answs.each(function (a) {
-                        self.get(a.get("question_id")).get("answears").push(a);
+                        self.get(a.get("question_id")).get("answers").push(a);
                     })
                 }
             });
@@ -127,7 +127,7 @@ var APP = {
                 //localStorage: new Backbone.LocalStorage("client")
                 defaults: {
                     question_id: null,
-                    answear: null,
+                    answer: null,
                 },
             });
             var InterviewCollection = Backbone.Collection.extend({
@@ -174,7 +174,7 @@ var APP = {
             });
 
             this.question_list = new QCollection();
-            this.answears_list = new ACollection();
+            this.answers_list = new ACollection();
             this.interview = new InterviewCollection();
             this.interview_hash = {};
             //this.interview.fetch();
@@ -195,7 +195,7 @@ var APP = {
 
             this.interview_hash[this.view_state.get('params').q_id] = {
                 question_id: this.view_state.get('params').q_id,
-                answear: searchIDs
+                answer: searchIDs
             };
         },
 
@@ -227,14 +227,14 @@ var APP = {
             },
             'click #yes' : function (event) {
                 event.preventDefault();
-                $("#answears_1").hide();
-                $("#answears_3").show();
+                $("#answers_1").hide();
+                $("#answers_3").show();
             }, 
             'click #no' : function (event) {
                 event.preventDefault();
-                $("#answears_1").hide();
-                $("#answears_" + 
-                    (this.question_list.get(this.view_state.get('params').q_id).get("answears").length !== 0 ?
+                $("#answers_1").hide();
+                $("#answers_" + 
+                    (this.question_list.get(this.view_state.get('params').q_id).get("answers").length !== 0 ?
                     "2" :
                     "4")
                 ).show();     
@@ -243,7 +243,7 @@ var APP = {
             'click #abort' : function (event) {
                 this.interview.add({
                     question: this.view_state.get('params').q_id,
-                    answear: -1
+                    answer: -1
                 });
                 this.saveInterview();
             }, 
@@ -275,10 +275,10 @@ var APP = {
                                 success: function(data) {
                                     if (self.view_state.get("params").q_id === null)
                                         self.view_state.get("params").q_id = data.first().get("id");
-                                    self.answears_list.fetch({
+                                    self.answers_list.fetch({
                                         dataType: "json",
                                         success: function(data) {
-                                            self.question_list.add_answears(data);
+                                            self.question_list.add_answers(data);
                                             self.render({questions: self.question_list, c: self.client});
                                         },
                                         error: function() {
