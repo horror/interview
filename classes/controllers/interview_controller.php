@@ -3,7 +3,7 @@ class interview_controller extends controller
 {
     public function get_questions_action($params)
     {
-        $q = db::exec($this->db, "SELECT id, type, content FROM i_questions", null);
+        $q = db::exec($this->db, "SELECT id, content FROM i_questions", null);
         $this->view->render('json', $q);
     }
     
@@ -30,5 +30,28 @@ class interview_controller extends controller
                 ]);
         
        $this->view->render('json', 'привет');
+    }
+    
+    public function add_question_action($params)
+    {
+        $q = arr::extract($params, ['category', 'content', 'a']);
+        db::exec($this->db, "INSERT INTO i_questions (content, category) VALUES(:content, :category)", [':content' => $q['content'], ':category' => $q['category']]);
+        $curr_q = db::last_id($this->db);
+        if ($q['a'] == null)
+           return;
+        foreach ($q['a'] as $a) 
+            db::exec($this->db, "INSERT INTO i_answers (question_id, content) VALUES(:question_id, :content)", [
+                ':question_id' => $curr_q,
+                ':content' => $a,
+            ]);
+    }
+    
+    public function add_answer_action($params)
+    {
+        $a = arr::extract($params, ['question_id', 'content', 'type']);
+        db::exec($this->db, "INSERT INTO i_answers (question_id, content, type) VALUES(:question_id, :content, :type)", 
+            [':question_id' => $a['question_id'], ':content' => $a['content'], ':type' => $a['type']]);
+        $curr_a = db::last_id($this->db);
+        $this->view->render('json', $curr_a);
     }
 }

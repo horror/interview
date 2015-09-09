@@ -2,7 +2,7 @@ var APP = {
     View_state: Backbone.Model.extend({
         defaults: {
             state: null,
-            params: null
+            params: {},
         },
     }),
 
@@ -15,6 +15,7 @@ var APP = {
         routes: {
             "!questions/(:id/)": "show_questions",
             "!start/": "show_start",
+            "!editor/": "show_editor",
         },
 
         show_questions: function (id) {
@@ -31,6 +32,12 @@ var APP = {
                 state: "start"
             });
         },
+        
+        show_editor: function () {
+            this.view_state.set({
+                state: "editor"
+            });
+        },
 
         url_generators: {
             questions: function (vs) {
@@ -39,6 +46,9 @@ var APP = {
             },
             start: function () {
                 return "!start/"
+            },
+            editor: function () {
+                return "!editor/"
             }
         },
 
@@ -192,11 +202,30 @@ var APP = {
             }).get();
             if (searchIDs.length === 0)
                 searchIDs.push(0);
-
-            this.interview_hash[this.view_state.get('params').q_id] = {
-                question_id: this.view_state.get('params').q_id,
-                answer: searchIDs
-            };
+            var other_answer = $("#other_answer").val();
+            var d = $.Deferred();
+     
+            if (other_answer !== '') 
+                $.post( 
+                    "/?controller=interview&action=add_answer", 
+                    {content: other_answer, question_id: this.view_state.get("params").q_id, type: 1}
+                ).done(function(id) {
+                    searchIDs.push(id);
+                    d.resolve();
+                });
+            else {
+                d.resolve();
+                if (searchIDs.length === 0)
+                    searchIDs.push(0);
+            }
+            self = this;
+            $.when(d.promise()).then(function () {
+                self.interview_hash[self.view_state.get('params').q_id] = {
+                    question_id: self.view_state.get('params').q_id,
+                    answer: searchIDs
+                };
+            });
+            
         },
 
         saveInterview: function () {
@@ -211,19 +240,13 @@ var APP = {
         },
 
         events: {
+            //questions
             'click .nav' : function () {
                 //this.interview.save_local();
             },
 
             'click .next' : function () {
                 this.saveInterviewState();
-            },
-
-            'click .start' : function () {
-                this.user.set({name: $("#user_name").val()});
-                this.client.set({name: $("#client_name").val()});
-                //this.user.save_local();
-                //this.client.save_local();
             },
             'click #yes' : function (event) {
                 event.preventDefault();
@@ -239,7 +262,6 @@ var APP = {
                     "4")
                 ).show();     
             }, 
-
             'click #abort' : function (event) {
                 this.interview.add({
                     question: this.view_state.get('params').q_id,
@@ -259,9 +281,65 @@ var APP = {
                 $("#question_last").show();
                 $(".last").removeClass("last").text("Закончить");
             }, 
+            //start
+            'click .start' : function () {
+                this.user.set({name: $("#user_name").val()});
+                this.client.set({name: $("#client_name").val()});
+                //this.user.save_local();
+                //this.client.save_local();
+            },
+            //editor
+            'click #answer_add' : function (event) {
+                event.preventDefault();
+                $("#answers_list").append("\
+                    <div class='answer_item'>\n\
+                        <input type='checkbox' name='answers' class='answer'>\n\
+                        <label>" + $("#answer_text").val() + "</label>\n\
+                    </div>"
+                );
+                $("#answer_text").val('');
+            },
+            'click .answer_item' : function (event) {
+                $(event.currentTarget).remove();
+            },
+            'click #question_add' : function (event) {
+                //event.preventDefault();
+                var q_text = $("#question_text").val();
+                var answs = $(".answer_item label").map(function() {return $(this).html();}).get();
+                var c = $("#question_category").val();
+                $.post( "/?controller=interview&action=add_question", {content: q_text, category: c, a: answs});
+            },
         },
 
-
+        update_qestions: function () {
+            self = this;
+            var d = $.Deferred();
+            if (self.question_list.length === 0)
+                self.question_list.fetch({
+                    dataType: "json",
+                    success: function(data) {
+                        if (self.view_state.get("params").q_id === null)
+                            self.view_state.get("params").q_id = data.first().get("id");
+                        self.answers_list.fetch({
+                            dataType: "json",
+                            success: function(data) {
+                                d.resolve();
+                            },
+                            error: function() {
+                                console.log('error');
+                            }
+                        });                                              
+                        console.log('success');
+                    },
+                    error: function() {
+                        console.log('error');
+                    }
+                });
+            else
+                d.resolve();
+            
+            return d.promise();
+        },
 
         refresh: function () {
             var self = this;
@@ -283,32 +361,7 @@ var APP = {
             $.when(d.promise()).then(function () {
                 switch(self.view_state.get("state")) {
                     case "questions":
-                        var d = $.Deferred();
-                        if (self.question_list.length === 0)
-                            self.question_list.fetch({
-                                dataType: "json",
-                                success: function(data) {
-                                    if (self.view_state.get("params").q_id === null)
-                                        self.view_state.get("params").q_id = data.first().get("id");
-                                    self.answers_list.fetch({
-                                        dataType: "json",
-                                        success: function(data) {
-                                            d.resolve();
-                                        },
-                                        error: function() {
-                                            console.log('error');
-                                        }
-                                    });                                              
-                                    console.log('success');
-                                },
-                                error: function() {
-                                    console.log('error');
-                                }
-                            });
-                        else
-                            d.resolve();
-                        
-                        $.when(d.promise()).then(function () {
+                        $.when(self.update_qestions()).then(function () {
                             self.question_list.add_answers(self.answers_list);
                             self.render({questions: self.question_list, c: self.client});
                         });
@@ -316,6 +369,14 @@ var APP = {
                     case "start":
                         self.render({c: self.client});
                         break;
+                    
+                    case "editor":
+                        $.when(self.update_qestions()).then(function () {
+                            self.question_list.add_answers(self.answers_list);
+                            self.render({questions: self.question_list});
+                        });
+                        break;
+                        
                     default: 
                         self.render({});
                         break;

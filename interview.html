@@ -5,6 +5,7 @@
         
         <link type="text/css" href="/css/normalize.css" rel="stylesheet" />
         <link type="text/css" href="/css/foundation.min.css" rel="stylesheet" />
+        <link type="text/css" href="/css/custom.css" rel="stylesheet" />
                     
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
@@ -39,9 +40,6 @@
                     <%var q = questions.get(p.q_id)%>
                     <%=q.get("content").replace(/User/g, u.get("name")).replace(/Client/g, c.get("name"))%>
                 </div>
-                <div class="small-6 small-centered columns" id="quesrion_last">
-                    <%=c.get("name")%>, спасибо за участие в опросе, ваше мнение очень важно для нас! Ждем вас в наших магазинах. Всего доброго, до свидания!
-                </div>
                 
                 <div class="large-10 large-offset-2 columns">    
                         <h5>Ответы</h5>
@@ -55,9 +53,12 @@
                 <div class="row" id="answers_2" style="display:none">
                     <%_.each(q.get("answers"), function (a) {%>
                         <div class="large-9 large-offset-3 columns">
-                            <input type="<%=q.getType()%>" id="<%=a.id%>" name="answers" value="<%=a.id%>"><label for="<%=a.id%>"><%=a.get("content")%></label>
+                            <input type="checkbox" id="<%=a.id%>" name="answers" value="<%=a.id%>"><label for="<%=a.id%>"><%=a.get("content")%></label>
                         </div>
                     <%})%>
+                    <div class="large-9 large-offset-3 columns">
+                        <label for="other_answer">Другое</label><input type="text" id="other_answer">
+                    </div>
                 </div>
                 <div class="row" id="answers_3" style="display:none">
                     <div class="large-9 large-offset-3 columns">
@@ -109,6 +110,56 @@
                 <a href="#!questions/" class="button radius nav start">Начать интервью</a>
             </div>
         </div>   
+        </script>
+        
+        <script type="text/template" id="editor">
+            <div class="row">
+                <div class="large-9 columns panel">
+                    <div class="row">
+                        <div class="large-7 large-offset-2 columns">    
+                            <h5>Вопрос</h5>
+                        </div>
+                        <div class="large-6 large-centered columns">
+                            <textarea id="question_text"></textarea>
+                        </div>
+                        <div class="large-6 large-centered columns">
+                            <select id="question_category">
+                                <option value="0">Розница</option>
+                                <option value="1">Доставка</option>
+                                <option value="2">Интернет магазин</option>
+                            </select>
+                        </div>
+                        <div class="large-7 large-offset-2 columns">    
+                            <h5>Ответы</h5>
+                        </div>
+                        <div class="large-9 large-offset-3 columns" id="answers_list">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="large-6 large-centered columns">
+
+                             <input style="float:right" type="text" name="answers" id="answer_text" placeholder="вариант ответа">
+                             <a href="#" class="button secondary tiny" id="answer_add">Добавить ответ</a>
+                        </div>
+                        <div class="small-12 small-centered columns text-center">
+                            <a href="/#!editor/" class="button radius nav start" id="question_add">Добавить вопрос</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="large-3 columns">
+                    <%questions.each(function (q) {%>
+                        <div class="panel callout radius">
+                            <%=q.get("content")%>
+                            <ul>
+                            <%_.each(q.get("answers"), function (a) {%>
+                                <li><%=a.get("content")%></li>
+                            <%})%>
+                            </ul>
+                        </div>
+                    <%})%>
+                </div>
+            </div>
         </script>
     </head>
     <body>

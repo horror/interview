@@ -5,7 +5,7 @@ class users_controller extends controller
 
     public function registration_action($params)
     {
-        $params = arr::extract($_POST, ['name', 'password']);
+        $params = arr::extract($params, ['name', 'password']);
         $params['msg'] = "please, sign up";
 
         if (arr::is_all_values_not_null($params)) {
@@ -26,7 +26,7 @@ class users_controller extends controller
 
     public function login_action($params)
     {
-        $params = arr::extract($_POST, ['name', 'password']);
+        $params = arr::extract($params, ['name', 'password']);
         $params['msg'] = "please, sign in";
 
         if (arr::is_all_values_not_null($params)) {
