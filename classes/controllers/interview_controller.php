@@ -15,7 +15,20 @@ class interview_controller extends controller
     
     public function save_interview_action($params)
     {
-        $request_body = file_get_contents('php://input');
-        $this->view->render('json', json_decode($request_body, true));
+        $data = json_decode(file_get_contents('php://input'), true);
+        $data['meta'] = arr::extract($data['meta'], ['user_id', 'client', 'date'], 'anonim');
+        $data['meta']['date'] = date('Y-m-d H:i:s');
+        db::exec($this->db, "INSERT INTO i_interview_meta (date, user_id, client) VALUES(:date, :user_id, :client)", $data['meta']);
+        $curr_meta = db::last_id($this->db);
+        $interview = $data["interview"];
+        foreach ($interview as $i) 
+            foreach ($i["answear"] as $a)
+                db::exec($this->db, "INSERT INTO i_interview (question_id, answear, meta_id) VALUES(:question_id, :answear, :meta_id)", [
+                    ':question_id' => $i["question_id"],
+                    ':answear' => $a,
+                    ':meta_id' => $curr_meta
+                ]);
+        
+       $this->view->render('json', 'привет');
     }
 }

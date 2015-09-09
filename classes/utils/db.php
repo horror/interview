@@ -17,4 +17,8 @@ class db {
         $row->execute($params);
         return $row->fetch(PDO::FETCH_ASSOC);
     }
+    
+    public static function last_id($handler) {
+        return $handler->lastInsertId();
+    }
 }

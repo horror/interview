@@ -251,6 +251,14 @@ var APP = {
                 this.saveInterviewState();
                 this.saveInterview();
             }, 
+            'click .last' : function (event) {
+                event.preventDefault();
+                this.saveInterviewState();
+                this.saveInterview();
+                $("#question").hide();
+                $("#question_last").show();
+                $(".last").removeClass("last").text("Закончить");
+            }, 
         },
 
 

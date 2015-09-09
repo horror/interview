@@ -26,13 +26,22 @@
                     <a href="#!start/" id="save" class="button tiny">Сохранить</a>
                 </div>
             </div>
-            <div class="row panel">
+            <div class="row panel" id="question_last" style="display:none">
+                <div class="small-6 small-centered columns">
+                    <%=c.get("name")%>, спасибо за участие в опросе, ваше мнение очень важно для нас! Ждем вас в наших магазинах. Всего доброго, до свидания!
+                </div>
+            </div>
+            <div class="row panel" id="question">
                 <div class="large-10 large-offset-2 columns">    
                         <h5>Вопрос</h5>
                 </div>
                 <div class="small-6 small-centered columns">
-                <%var q = questions.get(p.q_id)%>
-                <%=q.get("content").replace(/User/g, u.get("name")).replace(/Client/g, c.get("name"))%></div>
+                    <%var q = questions.get(p.q_id)%>
+                    <%=q.get("content").replace(/User/g, u.get("name")).replace(/Client/g, c.get("name"))%>
+                </div>
+                <div class="small-6 small-centered columns" id="quesrion_last">
+                    <%=c.get("name")%>, спасибо за участие в опросе, ваше мнение очень важно для нас! Ждем вас в наших магазинах. Всего доброго, до свидания!
+                </div>
                 
                 <div class="large-10 large-offset-2 columns">    
                         <h5>Ответы</h5>
@@ -58,7 +67,7 @@
                 <div class="row" id="answears_4" style="display:none">
                     <div class="large-9 large-offset-3 columns">
                         <span class="secondary round label">Ну вот! =(</span>
-                        <a href="" id="abort" class="button secondary">Закончить</a>
+                        <a href="#!start/" id="abort" class="button secondary">Закончить</a>
                     </div>
                 </div>
             </div>
@@ -72,6 +81,8 @@
                 <div class="small-6 columns text-center">
                     <% if ((another_q = questions.get(p.q_id).getRelative(1)) != undefined) {%>
                         <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav next">Следующий</a>
+                    <% } else { %>
+                        <a href="#!start/" class="button radius centered nav last">Прощаться</a>
                     <% } %>
                 </div>
             </div>

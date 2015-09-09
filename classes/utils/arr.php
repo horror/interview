@@ -2,7 +2,7 @@
 class arr {
 
     public static function extract($array, array $paths, $default = NULL) {
-        $found = array();
+        $found = [];
         foreach ($paths as $path) {
             $found[$path] = isset($array[$path]) ? $array[$path] : $default;
         }
