@@ -210,7 +210,7 @@ var APP = {
                     "/?controller=interview&action=add_answer", 
                     {content: other_answer, question_id: this.view_state.get("params").q_id, type: 1}
                 ).done(function(id) {
-                    searchIDs.push(id);
+                    searchIDs.push(JSON.parse(id)*1);
                     d.resolve();
                 });
             else {
@@ -318,8 +318,6 @@ var APP = {
                 self.question_list.fetch({
                     dataType: "json",
                     success: function(data) {
-                        if (self.view_state.get("params").q_id === null)
-                            self.view_state.get("params").q_id = data.first().get("id");
                         self.answers_list.fetch({
                             dataType: "json",
                             success: function(data) {
@@ -339,6 +337,16 @@ var APP = {
                 d.resolve();
             
             return d.promise();
+        },
+        
+        wait_for_questions: function(callback) {
+            var self = this;
+            $.when(self.update_qestions()).then(function () {
+                self.question_list.add_answers(self.answers_list);
+                if (self.view_state.get("params").q_id === null)
+                    self.view_state.get("params").q_id = self.question_list.first().get("id");
+                callback();
+            });
         },
 
         refresh: function () {
@@ -361,8 +369,7 @@ var APP = {
             $.when(d.promise()).then(function () {
                 switch(self.view_state.get("state")) {
                     case "questions":
-                        $.when(self.update_qestions()).then(function () {
-                            self.question_list.add_answers(self.answers_list);
+                        self.wait_for_questions(function () {
                             self.render({questions: self.question_list, c: self.client});
                         });
                         break;
@@ -371,8 +378,7 @@ var APP = {
                         break;
                     
                     case "editor":
-                        $.when(self.update_qestions()).then(function () {
-                            self.question_list.add_answers(self.answers_list);
+                        self.wait_for_questions(function () {
                             self.render({questions: self.question_list});
                         });
                         break;
