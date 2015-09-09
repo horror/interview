@@ -126,17 +126,42 @@ var APP = {
             var InterviewModel = Backbone.Model.extend({
                 //localStorage: new Backbone.LocalStorage("client")
                 defaults: {
-                    question: null,
+                    question_id: null,
                     answear: null,
                 },
             });
             var InterviewCollection = Backbone.Collection.extend({
                 model: InterviewModel,
-                date: "13:00 12-03-1992",
                 id: 1,
                 url: '/?controller=interview&action=save_interview',
+                user: null,
+                //date: null,
+                client: null,
+                _sync: function(method, model, options) {
+
+                    if( model && (method === 'create' || method === 'update' || method === 'patch') ) {
+                        options.contentType = 'application/json';
+                        options.data = JSON.stringify(options.attrs || model.toJSON());
+                    }
+
+                    options.data = JSON.stringify($.extend(
+                        {
+                            interview: JSON.parse(options.data)
+                        }, 
+                        {
+                            meta: {
+                                user_id: this.user,
+                                //date: this.date,
+                                client: this.client,
+                            }
+                        }
+                    ));
+                    
+                    return Backbone.sync.apply( this, [method, model, options]);
+                },
+                
                 save: function() {
-                    Backbone.sync('create', this, {
+                    this._sync('create', this, {
                         success: function() {
                             console.log('Saved!');
                         }
@@ -163,13 +188,13 @@ var APP = {
 
         saveInterviewState: function () {
             var searchIDs = $("input:checkbox:checked").map(function(){
-                return $(this).val();
+                return $(this).val()*1;
             }).get();
             if (searchIDs.length === 0)
                 searchIDs.push(0);
 
             this.interview_hash[this.view_state.get('params').q_id] = {
-                question: this.view_state.get('params').q_id,
+                question_id: this.view_state.get('params').q_id,
                 answear: searchIDs
             };
         },
@@ -178,7 +203,10 @@ var APP = {
             var models = $.map(this.interview_hash, function(v) { return v; });
             this.interview.add(models);
             this.interview.user = this.user.id;
+            this.interview.client = this.client.get('name');
+            //this.interview.date = new Date().getTime();
             this.interview.save();
+            this.interview.reset();
             this.interview_hash = {};
         },
 
@@ -213,7 +241,6 @@ var APP = {
             }, 
 
             'click #abort' : function (event) {
-                event.preventDefault();
                 this.interview.add({
                     question: this.view_state.get('params').q_id,
                     answear: -1
@@ -221,7 +248,6 @@ var APP = {
                 this.saveInterview();
             }, 
             'click #save' : function (event) {
-                event.preventDefault();
                 this.saveInterviewState();
                 this.saveInterview();
             }, 
