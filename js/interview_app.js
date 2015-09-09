@@ -265,11 +265,26 @@ var APP = {
 
         refresh: function () {
             var self = this;
-            self.user.fetch({
-                dataType: "json",
-                success: function(data) {
-                    switch(self.view_state.get("state")) {
-                        case "questions":
+            var d = $.Deferred()
+            if (self.user.get("name") === null)
+                self.user.fetch({
+                    dataType: "json",
+                    success: function(data) {
+                        d.resolve();
+                    },
+                    error: function() {
+                        location.href = "/";
+                        console.log('error');
+                    }
+                });
+            else
+                d.resolve();
+            
+            $.when(d.promise()).then(function () {
+                switch(self.view_state.get("state")) {
+                    case "questions":
+                        var d = $.Deferred();
+                        if (self.question_list.length === 0)
                             self.question_list.fetch({
                                 dataType: "json",
                                 success: function(data) {
@@ -278,8 +293,7 @@ var APP = {
                                     self.answers_list.fetch({
                                         dataType: "json",
                                         success: function(data) {
-                                            self.question_list.add_answers(data);
-                                            self.render({questions: self.question_list, c: self.client});
+                                            d.resolve();
                                         },
                                         error: function() {
                                             console.log('error');
@@ -291,18 +305,20 @@ var APP = {
                                     console.log('error');
                                 }
                             });
-                            break;
-                        case "start":
-                            self.render({c: self.client});
-                            break;
-                        default: 
-                            self.render({});
-                            break;
-                    }
-                },
-                error: function() {
-                    location.href = "/";
-                    console.log('error');
+                        else
+                            d.resolve();
+                        
+                        $.when(d.promise()).then(function () {
+                            self.question_list.add_answers(self.answers_list);
+                            self.render({questions: self.question_list, c: self.client});
+                        });
+                        break;
+                    case "start":
+                        self.render({c: self.client});
+                        break;
+                    default: 
+                        self.render({});
+                        break;
                 }
             });
         },
