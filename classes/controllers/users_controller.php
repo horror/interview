@@ -45,6 +45,13 @@ class users_controller extends controller
         $this->view->render('login', $params, true);
     }
     
+    public function logout_action()
+    {
+        session_destroy();
+        unset($_SESSION["loggined"]);
+        header('Location: /');
+    }
+    
     public function get_current_action($params)
     {
         $result = db::exec_row($this->db, "SELECT id, name FROM i_users WHERE name = :name", [
