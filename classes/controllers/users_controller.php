@@ -36,7 +36,7 @@ class users_controller extends controller
             ]);
             $params['msg'] = $row ? "complete" : "incorrect";
             if ($params['msg'] == "complete") {
-                usr::save([id => $row["id"], name => $params['name']]);
+                usr::init([id => $row["id"], name => $params['name']]);
                 header('Location: /interview.html');
             }
         }

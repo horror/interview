@@ -8,7 +8,7 @@ class usr {
         return json_decode($_SESSION['loggined'], true)['name'];
     }
     
-    public static function save($params) {
+    public static function init($params) {
         session_start();
         $_SESSION['loggined'] = json_encode($params);
     }
