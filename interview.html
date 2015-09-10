@@ -15,7 +15,7 @@
         <script src="/vendors/js/foundation-datepicker.min.js"></script>
         <script src="/js/interview_app.js"></script>
         <script src="/js/config.js"></script>
-        <title>Интервью с клиентом</title>
+        <title>Опросник v1.0</title>
 
         <script type="text/template" id="top_menu">
         <nav class="top-bar" data-topbar role="navigation">
@@ -27,6 +27,7 @@
             <section class="top-bar-section">
               <!-- Right Nav Section -->
               <ul class="right">
+                <li><a href="/?controller=users&action=logout">Выход</a>
               </ul>
 
               <!-- Left Nav Section -->
@@ -245,9 +246,6 @@
           </div>
           <div class="small-12 small-centered columns text-center">
               <a href="#!questions/" class="button radius nav start">Начать интервью</a>
-          </div>
-          <div class="small-12 small-centered columns text-center">
-              <a href="/?controller=users&action=logout" class="button radius">Выйти</a>
           </div>
         </div>   
         </form>
