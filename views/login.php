@@ -5,7 +5,7 @@
             <a href="/?controller=users&action=registration">Зарегистрироваться</a>
             <form action="/?controller=users&action=login" method="POST">
                 <input  type="text" name="name" value="<?=$params['name']?>" placeholder="Имя">
-                <input  type="text" name="password" value="<?=$params['password']?>" placeholder="Пароль">
+                <input  type="password" name="password" value="<?=$params['password']?>" placeholder="Пароль">
                 <input  type="submit" name="submit" class="button radius" value="Войти">
             </form>
         </div>
