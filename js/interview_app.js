@@ -109,8 +109,7 @@ var APP = {
 
             var QModel = Backbone.Model.extend({
                 defaults: {
-                    answers: [],
-                    types: ["radio", "checkbox"]
+                    answers: []
                 },
                 get_relative: function(direction) {
                     return this.collection.at(this.collection.indexOf(this) + direction);
@@ -250,7 +249,8 @@ var APP = {
             $.when(d.promise()).then(function () {
                 self.interview_hash[self.view_state.get('params').q_id] = {
                     question_id: self.view_state.get('params').q_id,
-                    answer: searchIDs
+                    answer: searchIDs,
+                    score: self.interview.answers_type ? $("input[name='score']:radio:checked").val() : null
                 };
             });
             
@@ -281,6 +281,16 @@ var APP = {
             
             return d.promise();
         },
+        
+        show_default_answers: function () {
+            $("#answers_1").hide();
+            $("#answers_1_score").hide();
+            $("#answers_" + 
+                (this.question_list.get(this.view_state.get('params').q_id).get("answers").length !== 0 ?
+                "2" :
+                "4")
+            ).show(); 
+        },
 
         events: {
             //questions
@@ -296,16 +306,11 @@ var APP = {
                 $("#answers_1").hide();
                 $("#answers_1_score").hide();
                 $("#answers_3").show();
+                $(".next")[0].click();
             }, 
             'click #no' : function (event) {
                 event.preventDefault();
-                $("#answers_1").hide();
-                $("#answers_1_score").hide();
-                $("#answers_" + 
-                    (this.question_list.get(this.view_state.get('params').q_id).get("answers").length !== 0 ?
-                    "2" :
-                    "4")
-                ).show();     
+                this.show_default_answers();    
             }, 
             'click #abort' : function (event) {
                 this.interview.add({
@@ -383,7 +388,8 @@ var APP = {
                 $.post( "/?controller=interview&action=add_question", {content: q_text, category: c, a: answs});
             },
             'change .score' : function (event) {
-                $(event.currentTarget).val()
+                if ($(event.currentTarget).val() <= this.settings.bad_scores_before)
+                    this.show_default_answers();
             }
             //stats
         },
@@ -457,6 +463,9 @@ var APP = {
                     case "start":
                         self.render({c: self.client});
                         $("#operator_type").val(0).change();
+                        $('#calling_date').fdatepicker({
+                            format: 'mm-dd-yyyy'
+                        });
                         break;
                     
                     case "editor":

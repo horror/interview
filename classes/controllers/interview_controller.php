@@ -22,14 +22,21 @@ class interview_controller extends controller
                 . "VALUES(:date, :user_id, :client, :client_phone, :calling_date, :order_no, :product, :shop)", $data['meta']);
         $curr_meta = db::last_id($this->db);
         $interview = $data["interview"];
-        foreach ($interview as $i) 
+        foreach ($interview as $i) {
+            if ($i["score"] != null) {
+                db::exec($this->db, "INSERT INTO i_interview_scores (question_id, meta_id, score) VALUES(:question_id, :meta_id, :score)", [
+                    ':question_id' => $i["question_id"],
+                    ':meta_id' => $curr_meta,
+                    ':score' => $i["score"],
+                ]); 
+            }
             foreach ($i["answer"] as $a)
                 db::exec($this->db, "INSERT INTO i_interview (question_id, answer, meta_id) VALUES(:question_id, :answer, :meta_id)", [
                     ':question_id' => $i["question_id"],
                     ':answer' => $a,
                     ':meta_id' => $curr_meta
                 ]);
-        
+        }
        $this->view->render('json', $data['meta']);
     }
     
