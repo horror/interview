@@ -234,6 +234,7 @@ var APP = {
             var other_answer = $("#other_answer").val();
             var d = $.Deferred();
             var q = this.view_state.get("params").q_id;
+            var score = $("input[name='score']:radio:checked").val();
             if (other_answer !== '') 
                 $.post( 
                     "/?controller=interview&action=add_answer", 
@@ -253,12 +254,12 @@ var APP = {
             }
             
             $.when(d.promise()).then(function () {
-                if (searchIDs.length === 0 && $("input[name='score']:radio:checked").val() === undefined)
+                if (searchIDs.length === 0 && score === undefined)
                     return;
                 self.interview_hash[q] = {
                     question_id: q,
                     answer: searchIDs,
-                    score: self.interview.answers_type ? $("input[name='score']:radio:checked").val() : null
+                    score: self.interview.answers_type ? score : null
                 };
             });
             
