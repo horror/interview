@@ -102,12 +102,14 @@
                             <%} else {%>
                                 <span class="<%=(ans[0] == 0) ? 'success' : 'secondary' %> label"><%=(ans[0] == 0) ? 'Да' : 'Нет' %></span>
                             <%}%>
-                            <%_.each(ans, function (a) {%>
-                                <%if (a == 0) return;%>
-                                <div class="large-9 large-offset-3 columns">
-                                    <label><%=answers.get(a).get('content')%></label>
-                                </div>
-                            <%})%>
+                        </div>
+                        <div class="large-9 large-offset-3 columns">
+                            <ul>
+                                <%_.each(ans, function (a) {%>
+                                    <%if (a == 0) return;%>
+                                    <li><%=answers.get(a).get('content')%></li>
+                                <%})%>
+                            </ul>
                         </div>
                     </div>
                 <%}%>
