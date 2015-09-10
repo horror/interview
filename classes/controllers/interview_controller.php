@@ -9,7 +9,7 @@ class interview_controller extends controller
     
     public function get_answers_action($params)
     {
-        $a = db::exec($this->db, "SELECT id, question_id, content FROM i_answers", null);
+        $a = db::exec($this->db, "SELECT id, question_id, content FROM i_answers WHERE type = 0", null);
         $this->view->render('json', $a);
     }
     

@@ -116,6 +116,9 @@ var APP = {
                 },
                 get_category_name: function() {
                     return categories[this.get('category')];
+                },
+                add_answer: function (a) {
+                    this.get('answers').push(a);
                 }
             });
             var QCollection = Backbone.Collection.extend({
@@ -224,31 +227,36 @@ var APP = {
         },
 
         saveInterviewState: function () {
+            var self = this;
             var searchIDs = $("input[name='answers']:checkbox:checked").map(function(){
                 return $(this).val()*1;
             }).get();
-            if (searchIDs.length === 0)
-                searchIDs.push(0);
             var other_answer = $("#other_answer").val();
             var d = $.Deferred();
-     
+            var q = this.view_state.get("params").q_id;
             if (other_answer !== '') 
                 $.post( 
                     "/?controller=interview&action=add_answer", 
-                    {content: other_answer, question_id: this.view_state.get("params").q_id, type: 1}
+                    {content: other_answer, question_id: q, type: 1}
                 ).done(function(id) {
-                    searchIDs.push(JSON.parse(id)*1);
+                    var id = JSON.parse(id)*1;
+                    searchIDs.push(id);
+                    self.question_list.get(q).add_answer(
+                        self.answers_list.add({id: id, content: other_answer}).last()
+                    );
                     d.resolve();
                 });
             else {
                 d.resolve();
-                if (searchIDs.length === 0)
+                if ($("#answers_3").is(":visible"))
                     searchIDs.push(0);
             }
-            var self = this;
+            
             $.when(d.promise()).then(function () {
-                self.interview_hash[self.view_state.get('params').q_id] = {
-                    question_id: self.view_state.get('params').q_id,
+                if (searchIDs.length === 0 && $("input[name='score']:radio:checked").val() === undefined)
+                    return;
+                self.interview_hash[q] = {
+                    question_id: q,
                     answer: searchIDs,
                     score: self.interview.answers_type ? $("input[name='score']:radio:checked").val() : null
                 };
@@ -283,13 +291,16 @@ var APP = {
         },
         
         show_default_answers: function () {
-            $("#answers_1").hide();
-            $("#answers_1_score").hide();
             $("#answers_" + 
                 (this.question_list.get(this.view_state.get('params').q_id).get("answers").length !== 0 ?
                 "2" :
                 "4")
             ).show(); 
+        },
+        
+        hide_default_answers: function () {
+            $("#answers_2").hide(); 
+            $("#answers_4").hide(); 
         },
 
         events: {
@@ -310,6 +321,8 @@ var APP = {
             }, 
             'click #no' : function (event) {
                 event.preventDefault();
+                $("#answers_1").hide();
+                $("#answers_1_score").hide();
                 this.show_default_answers();    
             }, 
             'click #abort' : function (event) {
@@ -330,6 +343,8 @@ var APP = {
                 $("#question").hide();
                 $("#question_last").show();
                 $(".last").removeClass("last").text("Закончить");
+                $(".prev").remove();
+                $("#menu").remove();
             }, 
             //start
             'click .start' : function (event) {
@@ -390,6 +405,8 @@ var APP = {
             'change .score' : function (event) {
                 if ($(event.currentTarget).val() <= this.settings.bad_scores_before)
                     this.show_default_answers();
+                else
+                    this.hide_default_answers();
             }
             //stats
         },
@@ -457,7 +474,7 @@ var APP = {
                             var qs = self.question_list.byCategories(self.interview.question_categories);
                             if (self.view_state.get("params").q_id === null)
                                 self.view_state.get("params").q_id = qs.first().get("id");
-                            self.render({questions: qs, c: self.client, at: self.interview.answers_type});
+                            self.render({questions: qs, answers: self.answers_list,  c: self.client, interview: self.interview, interview_hash: self.interview_hash});
                         });
                         break;
                     case "start":
@@ -466,6 +483,8 @@ var APP = {
                         $('#calling_date').fdatepicker({
                             format: 'mm-dd-yyyy'
                         });
+                        self.interview_hash = {};
+                        self.interview.reset();
                         break;
                     
                     case "editor":

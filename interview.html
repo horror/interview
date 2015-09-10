@@ -20,7 +20,7 @@
         <script type="text/template" id="questions">
         <%var q = questions.get(p.q_id)%>
         <div class="row medium-uncollapse large-collapse">
-            <div class="row">
+            <div class="row" id="menu">
                 <div class="small-3 columns">
                     <a href="#!start/" class="button tiny">Сначала</a>
                     <a href="#!start/" id="save" class="button tiny">Сохранить</a>
@@ -45,7 +45,7 @@
                 <div class="large-10 large-offset-2 columns">    
                         <h5>Ответы</h5>
                 </div>
-                <%if (at && q.get("answers").length > 0) {%>
+                <%if (interview.answers_type*1 && q.get("answers").length > 0) {%>
                     <div class="row" id="answers_1_score" >
                         <div class="large-9 large-offset-3 columns">
                             <input type="radio" id="score_1" value="1" name="score" class="score"><label for="score_1">1</label>
@@ -89,12 +89,34 @@
                         <a href="#!start/" id="abort" class="button secondary">Закончить</a>
                     </div>
                 </div>
+                <%if (interview_hash[q.id] != undefined) {%>
+                    <div class="row" id="last_answer">
+                        <%var ans = interview_hash[q.id].answer%>
+                        <%var score = interview_hash[q.id].score%>
+                        <div class="large-10 large-offset-2 columns">    
+                            <h5>Последний ответ</h5>
+                        </div>
+                        <div class="large-9 large-offset-3 columns">
+                            <%if (interview.answers_type*1 && q.get("answers").length > 0) {%>
+                                <span class="info label"><%=score%> очков</span>
+                            <%} else {%>
+                                <span class="<%=(ans[0] == 0) ? 'success' : 'secondary' %> label"><%=(ans[0] == 0) ? 'Да' : 'Нет' %></span>
+                            <%}%>
+                            <%_.each(ans, function (a) {%>
+                                <%if (a == 0) return;%>
+                                <div class="large-9 large-offset-3 columns">
+                                    <label><%=answers.get(a).get('content')%></label>
+                                </div>
+                            <%})%>
+                        </div>
+                    </div>
+                <%}%>
             </div>
             <%var another_q;%>
             <div class="row">
                 <div class="small-6 columns text-center">
                     <% if ((another_q = questions.get(p.q_id).get_relative(-1)) != undefined) {%>
-                        <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav">Предыдущий</a>
+                        <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav prev">Предыдущий</a>
                     <% } %>
                 </div>
                 <div class="small-6 columns text-center">
