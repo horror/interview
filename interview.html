@@ -20,6 +20,7 @@
         </style>
 
         <script type="text/template" id="questions">
+        <%var q = questions.get(p.q_id)%>
         <div class="row medium-uncollapse large-collapse">
             <div class="row">
                 <div class="small-3 columns">
@@ -34,10 +35,12 @@
             </div>
             <div class="row panel" id="question">
                 <div class="large-10 large-offset-2 columns">    
+                        <h4><%=q.get_category_name()%></h4>
+                </div>
+                <div class="large-10 large-offset-2 columns">    
                         <h5>Вопрос</h5>
                 </div>
                 <div class="small-6 small-centered columns">
-                    <%var q = questions.get(p.q_id)%>
                     <%=q.get("content").replace(/User/g, u.get("name")).replace(/Client/g, c.get("name"))%>
                 </div>
                 
@@ -75,12 +78,12 @@
             <%var another_q;%>
             <div class="row">
                 <div class="small-6 columns text-center">
-                    <% if ((another_q = questions.get(p.q_id).getRelative(-1)) != undefined) {%>
+                    <% if ((another_q = questions.get(p.q_id).get_relative(-1)) != undefined) {%>
                         <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav">Предыдущий</a>
                     <% } %>
                 </div>
                 <div class="small-6 columns text-center">
-                    <% if ((another_q = questions.get(p.q_id).getRelative(1)) != undefined) {%>
+                    <% if ((another_q = questions.get(p.q_id).get_relative(1)) != undefined) {%>
                         <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav next">Следующий</a>
                     <% } else { %>
                         <a href="#!start/" class="button radius centered nav last">Прощаться</a>
@@ -101,14 +104,81 @@
           </div>
           <div class="row">
             <div class="small-6 small-centered columns">
+              <label>Тип интервью
+                <select id="question_categorys">
+                    <option value="0">Да/Нет</option>
+                    <option value="1">Баллы</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="small-6 small-centered columns">
+              <label>Дата обзвона
+                <input id="calling_date" type="date" />
+              </label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="small-6 small-centered columns">
+              <label>Набор вопросов
+                <select id="question_categories">
+                    <option value="0">Розница</option>
+                    <option value="0,1">Розница+Доставка</option>
+                    <option value="2">Интернет магазин</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="small-6 small-centered columns">
+              <label>Оператор
+                <select id="operator_type">
+                    <option value="0">Оператор 1</option>
+                    <option value="1">Оператор 2</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="row" id="shop_block">
+            <div class="small-6 small-centered columns">
+              <label>Магазин
+                <select id="shop">
+                </select>
+              </label>
+            </div>
+          </div> 
+          <div class="row">
+            <div class="small-6 small-centered columns">
               <label>Берете интервью у клиента
                 <input id="client_name" type="text" placeholder="Имя клиента" value="<%=c.get('name')%>" />
               </label>
             </div>
           </div>
-            <div class="small-12 small-centered columns text-center">
-                <a href="#!questions/" class="button radius nav start">Начать интервью</a>
+          <div class="row">
+            <div class="small-6 small-centered columns">
+              <label>Телефон
+                <input id="client_phone" type="text" placeholder="+7-9XX-XX-XX-XX" value="" />
+              </label>
             </div>
+          </div>
+          <div class="row">
+            <div class="small-6 small-centered columns">
+              <label>№ реализации
+                <input id="order_no" type="text" placeholder="" value="" />
+              </label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="small-6 small-centered columns">
+              <label>Товар
+                <input id="product" type="text" placeholder="Стиральная машина" value="" />
+              </label>
+            </div>
+          </div>
+          <div class="small-12 small-centered columns text-center">
+              <a href="#!questions/" class="button radius nav start">Начать интервью</a>
+          </div>
         </div>   
         </script>
         

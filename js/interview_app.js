@@ -100,11 +100,12 @@ var APP = {
                     answers: [],
                     types: ["radio", "checkbox"]
                 },
-                getType: function() {
-                    return this.get("types")[this.get("type")];
-                },
-                getRelative: function(direction) {
+                categories: ["Розница", "Доставка", "Интернет магазин"],
+                get_relative: function(direction) {
                     return this.collection.at(this.collection.indexOf(this) + direction);
+                },
+                get_category_name: function() {
+                    return this.categories[this.get('category')];
                 }
             });
             var QCollection = Backbone.Collection.extend({
@@ -116,8 +117,16 @@ var APP = {
                         q.set({answers: []});
                     })
                     answs.each(function (a) {
-                        self.get(a.get("question_id")).get("answers").push(a);
+                        if (self.get(a.get("question_id")))
+                            self.get(a.get("question_id")).get("answers").push(a);
                     })
+                },
+                byCategories: function (categories) {
+                    var filtered = this.select(function (q) {
+                        return categories.indexOf(q.get('category')) !== -1;
+                    });
+                    filtered = filtered.map(function (i) {return i.attributes})
+                    return new QCollection(filtered);
                 }
             });
 
@@ -130,6 +139,9 @@ var APP = {
             });
 
             var ClientModel = Backbone.Model.extend({
+                defaults: {
+                    name: null
+                }
                 //localStorage: new Backbone.LocalStorage("client")
             });
 
@@ -144,9 +156,20 @@ var APP = {
                 model: InterviewModel,
                 id: 1,
                 url: '/?controller=interview&action=save_interview',
-                user: null,
-                //date: null,
-                client: null,
+                meta: {
+                    user_id: null,
+                    calling_date: null,
+                    client: null,
+                    client_phone: null,
+                    shop: null,  
+                    order_no: null,
+                    product: null
+                },
+                question_categories: null,
+                operator_shop_ref: {
+                    0: [2,3,17,19,21,22,24,25],
+                    1: [5,7,8,11,12,15,16,20],
+                },
                 _sync: function(method, model, options) {
 
                     if( model && (method === 'create' || method === 'update' || method === 'patch') ) {
@@ -159,11 +182,7 @@ var APP = {
                             interview: JSON.parse(options.data)
                         }, 
                         {
-                            meta: {
-                                user_id: this.user,
-                                //date: this.date,
-                                client: this.client,
-                            }
+                            meta: this.meta
                         }
                     ));
                     
@@ -218,7 +237,7 @@ var APP = {
                 if (searchIDs.length === 0)
                     searchIDs.push(0);
             }
-            self = this;
+            var self = this;
             $.when(d.promise()).then(function () {
                 self.interview_hash[self.view_state.get('params').q_id] = {
                     question_id: self.view_state.get('params').q_id,
@@ -231,8 +250,9 @@ var APP = {
         saveInterview: function () {
             var models = $.map(this.interview_hash, function(v) { return v; });
             this.interview.add(models);
-            this.interview.user = this.user.id;
-            this.interview.client = this.client.get('name');
+            this.interview.meta.user_id = this.user.id;
+            this.interview.meta.client = this.client.get('name');
+            this.interview.meta.client_phone = this.client.get('phone');
             //this.interview.date = new Date().getTime();
             this.interview.save();
             this.interview.reset();
@@ -285,8 +305,29 @@ var APP = {
             'click .start' : function () {
                 this.user.set({name: $("#user_name").val()});
                 this.client.set({name: $("#client_name").val()});
+                this.client.set({phone: $("#client_phone").val()});
+                this.interview.meta.calling_date = $("#calling_date").val();
+                this.interview.meta.shop = $("#shop").val();
+                this.interview.meta.order_no = $("#order_no").val();
+                this.interview.meta.product = $("#product").val();
+                this.interview.question_categories = $("#question_categories").val().split(',');
                 //this.user.save_local();
                 //this.client.save_local();
+            },
+            'click #question_categories' : function () {
+                if ($("#question_categories").val() == 2)
+                    $("#shop_block").hide()
+                else
+                    $("#shop_block").show();
+            },
+            'change #operator_type' : function () {
+                $("#shop option").remove();
+                _.each(this.interview.operator_shop_ref[$("#operator_type").val()], function (shop) {
+                    $("#shop").append("\
+                        <option value='" + shop + "'>СП-" + shop + "</option>"
+                    );
+                })
+                
             },
             //editor
             'click #answer_add' : function (event) {
@@ -312,7 +353,7 @@ var APP = {
         },
 
         update_qestions: function () {
-            self = this;
+            var self = this;
             var d = $.Deferred();
             if (self.question_list.length === 0)
                 self.question_list.fetch({
@@ -343,15 +384,16 @@ var APP = {
             var self = this;
             $.when(self.update_qestions()).then(function () {
                 self.question_list.add_answers(self.answers_list);
-                if (self.view_state.get("params").q_id === null)
-                    self.view_state.get("params").q_id = self.question_list.first().get("id");
                 callback();
             });
         },
 
         refresh: function () {
+            if (this.client.get("name") === null && this.view_state.get("state") !== "start")
+                location.href = "/";
+            
             var self = this;
-            var d = $.Deferred()
+            var d = $.Deferred();
             if (self.user.get("name") === null)
                 self.user.fetch({
                     dataType: "json",
@@ -370,11 +412,15 @@ var APP = {
                 switch(self.view_state.get("state")) {
                     case "questions":
                         self.wait_for_questions(function () {
-                            self.render({questions: self.question_list, c: self.client});
+                            var qs = self.question_list.byCategories(self.interview.question_categories);
+                            if (self.view_state.get("params").q_id === null)
+                                self.view_state.get("params").q_id = qs.first().get("id");
+                            self.render({questions: qs, c: self.client});
                         });
                         break;
                     case "start":
                         self.render({c: self.client});
+                        $("#operator_type").val(0).change();
                         break;
                     
                     case "editor":
