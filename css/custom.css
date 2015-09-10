@@ -1,3 +1,7 @@
 .answer_item {
     cursor: pointer;
 }
+
+input[type="text"]{
+    margin: 0;
+}
