@@ -55,4 +55,12 @@ class interview_controller extends controller
         $curr_a = db::last_id($this->db);
         $this->view->render('json', $curr_a);
     }
+    
+    public function check_access_action($params)
+    {
+        $p = arr::extract($params, ['calling_date', 'shop']);
+        $p['user_id'] = usr::id();
+        $c = db::exec_count($this->db, "SELECT COUNT(*) FROM i_interview_meta WHERE calling_date = :calling_date AND shop = :shop AND user_id != :user_id", $p);
+        $this->view->render('json', !$c);
+    }
 }

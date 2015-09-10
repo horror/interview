@@ -166,6 +166,7 @@ var APP = {
                     product: null
                 },
                 question_categories: null,
+                access: true,
                 operator_shop_ref: {
                     0: [2,3,17,19,21,22,24,25],
                     1: [5,7,8,11,12,15,16,20],
@@ -258,6 +259,20 @@ var APP = {
             this.interview.reset();
             this.interview_hash = {};
         },
+        
+        check_access: function () {
+            var d = $.Deferred();
+            var self = this;
+            $.post( 
+                "/?controller=interview&action=check_access", 
+                {calling_date: this.interview.meta.calling_date, shop: this.interview.meta.shop}
+            ).done(function(result) {
+                self.interview.access = JSON.parse(result);
+                d.resolve();
+            });
+            
+            return d.promise();
+        },
 
         events: {
             //questions
@@ -302,7 +317,9 @@ var APP = {
                 $(".last").removeClass("last").text("Закончить");
             }, 
             //start
-            'click .start' : function () {
+            'click .start' : function (event) {
+                event.preventDefault();
+                var self = this;
                 this.user.set({name: $("#user_name").val()});
                 this.client.set({name: $("#client_name").val()});
                 this.client.set({phone: $("#client_phone").val()});
@@ -311,8 +328,12 @@ var APP = {
                 this.interview.meta.order_no = $("#order_no").val();
                 this.interview.meta.product = $("#product").val();
                 this.interview.question_categories = $("#question_categories").val().split(',');
-                //this.user.save_local();
-                //this.client.save_local();
+                $.when(self.check_access()).then(function () { 
+                    if (self.interview.access)
+                        location.href = "#!questions/";
+                    else
+                        $("#msg_block").html('<span class="alert round label">Вы не имеете доступа к этому магазину по данной дате обзвона</span>');
+                });
             },
             'click #question_categories' : function () {
                 if ($("#question_categories").val() == 2)

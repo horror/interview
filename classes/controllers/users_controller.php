@@ -30,14 +30,13 @@ class users_controller extends controller
         $params['msg'] = "Введите своё имя и пароль";
 
         if (arr::is_all_values_not_null($params)) {
-            $count = db::exec_count($this->db, "SELECT COUNT(*) FROM i_users WHERE name = :name AND password = :password", [
+            $row = db::exec_row($this->db, "SELECT id FROM i_users WHERE name = :name AND password = :password", [
                 ':name' => $params['name'],
                 ':password' => md5($params['password'] . $this->salt)
             ]);
-            $params['msg'] = $count > 0 ? "complete" : "incorrect";
+            $params['msg'] = $row ? "complete" : "incorrect";
             if ($params['msg'] == "complete") {
-                session_start();
-                $_SESSION['loggined'] = $params['name'];
+                usr::save([id => $row["id"], name => $params['name']]);
                 header('Location: /interview.html');
             }
         }
@@ -47,15 +46,14 @@ class users_controller extends controller
     
     public function logout_action()
     {
-        session_destroy();
-        unset($_SESSION["loggined"]);
+        usr::destroy();
         header('Location: /');
     }
     
     public function get_current_action($params)
     {
         $result = db::exec_row($this->db, "SELECT id, name FROM i_users WHERE name = :name", [
-            ':name' => $_SESSION['loggined']
+            ':name' => usr::name()
         ]);
 
         $this->view->render('json', $result);
