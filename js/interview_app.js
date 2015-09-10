@@ -350,6 +350,13 @@ var APP = {
             //start
             'click .start' : function (event) {
                 event.preventDefault();
+                if ($(':input[required]:visible').filter(function () {
+                        return $(this).val() === ''
+                    }).length
+                ) {
+                    $("#msg_block").html('<span class="alert round label">Заполнены не все поля</span>');
+                    return;
+                }
                 var self = this;
                 this.user.set({name: $("#user_name").val()});
                 this.client.set({name: $("#client_name").val()});
