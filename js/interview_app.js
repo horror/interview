@@ -400,7 +400,7 @@ var APP = {
                     success: function(data) {
                         d.resolve();
                     },
-                    error: function() {
+                    error: function(e) {
                         location.href = "/";
                         console.log('error');
                     }
@@ -446,7 +446,7 @@ var APP = {
 
         start: function (default_url) {
             var current = this.router.current();
-            this.router.navigate(current.params != null ? current.fragment : default_url, {trigger: true});
+            this.router.navigate(current.params !== null ? current.fragment : default_url, {trigger: true});
         }
     }),
 
