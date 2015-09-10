@@ -16,6 +16,7 @@ var APP = {
             "!questions/(:id/)": "show_questions",
             "!start/": "show_start",
             "!editor/": "show_editor",
+            "!stats/": "show_stats",
         },
 
         show_questions: function (id) {
@@ -38,6 +39,12 @@ var APP = {
                 state: "editor"
             });
         },
+        
+        show_stats: function () {
+            this.view_state.set({
+                state: "stats"
+            });
+        },
 
         url_generators: {
             questions: function (vs) {
@@ -49,6 +56,9 @@ var APP = {
             },
             editor: function () {
                 return "!editor/"
+            },
+            stats: function () {
+                return "!stats/"
             }
         },
 
@@ -94,18 +104,19 @@ var APP = {
                 model: AModel,
                 url: '/?controller=interview&action=get_answers',
             });
+            
+            var categories = this.settings.categories;
 
             var QModel = Backbone.Model.extend({
                 defaults: {
                     answers: [],
                     types: ["radio", "checkbox"]
                 },
-                categories: ["Розница", "Доставка", "Интернет магазин"],
                 get_relative: function(direction) {
                     return this.collection.at(this.collection.indexOf(this) + direction);
                 },
                 get_category_name: function() {
-                    return this.categories[this.get('category')];
+                    return categories[this.get('category')];
                 }
             });
             var QCollection = Backbone.Collection.extend({
@@ -166,11 +177,8 @@ var APP = {
                     product: null
                 },
                 question_categories: null,
+                answers_type: null,
                 access: true,
-                operator_shop_ref: {
-                    0: [2,3,17,19,21,22,24,25],
-                    1: [5,7,8,11,12,15,16,20],
-                },
                 _sync: function(method, model, options) {
 
                     if( model && (method === 'create' || method === 'update' || method === 'patch') ) {
@@ -217,7 +225,7 @@ var APP = {
         },
 
         saveInterviewState: function () {
-            var searchIDs = $("input:checkbox:checked").map(function(){
+            var searchIDs = $("input[name='answers']:checkbox:checked").map(function(){
                 return $(this).val()*1;
             }).get();
             if (searchIDs.length === 0)
@@ -286,11 +294,13 @@ var APP = {
             'click #yes' : function (event) {
                 event.preventDefault();
                 $("#answers_1").hide();
+                $("#answers_1_score").hide();
                 $("#answers_3").show();
             }, 
             'click #no' : function (event) {
                 event.preventDefault();
                 $("#answers_1").hide();
+                $("#answers_1_score").hide();
                 $("#answers_" + 
                     (this.question_list.get(this.view_state.get('params').q_id).get("answers").length !== 0 ?
                     "2" :
@@ -327,6 +337,7 @@ var APP = {
                 this.interview.meta.shop = $("#shop").val();
                 this.interview.meta.order_no = $("#order_no").val();
                 this.interview.meta.product = $("#product").val();
+                this.interview.answers_type = $("#answers_type").val();
                 this.interview.question_categories = $("#question_categories").val().split(',');
                 $.when(self.check_access()).then(function () { 
                     if (self.interview.access)
@@ -343,7 +354,7 @@ var APP = {
             },
             'change #operator_type' : function () {
                 $("#shop option").remove();
-                _.each(this.interview.operator_shop_ref[$("#operator_type").val()], function (shop) {
+                _.each(this.settings.operator_shop_ref[$("#operator_type").val()], function (shop) {
                     $("#shop").append("\
                         <option value='" + shop + "'>СП-" + shop + "</option>"
                     );
@@ -371,6 +382,10 @@ var APP = {
                 var c = $("#question_category").val();
                 $.post( "/?controller=interview&action=add_question", {content: q_text, category: c, a: answs});
             },
+            'change .score' : function (event) {
+                $(event.currentTarget).val()
+            }
+            //stats
         },
 
         update_qestions: function () {
@@ -436,7 +451,7 @@ var APP = {
                             var qs = self.question_list.byCategories(self.interview.question_categories);
                             if (self.view_state.get("params").q_id === null)
                                 self.view_state.get("params").q_id = qs.first().get("id");
-                            self.render({questions: qs, c: self.client});
+                            self.render({questions: qs, c: self.client, at: self.interview.answers_type});
                         });
                         break;
                     case "start":
@@ -471,7 +486,7 @@ var APP = {
         }
     }),
 
-    display : function () {
+    display : function (settings) {
         var self = this;
 
         var view_state = new self.View_state();
@@ -484,13 +499,10 @@ var APP = {
         var view = new self.View_logic({
             view_state: view_state,
             router: router,
+            settings: settings,
         });
 
         Backbone.history.start();
         view.start('!start/');
     }
 }
-
-$(function() {
-    APP.display();
-});

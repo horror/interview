@@ -12,6 +12,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone-localstorage.js/1.1.16/backbone.localStorage-min.js"></script>
         <script src="/js/interview_app.js"></script>
+        <script src="/js/config.js"></script>
         <title>Интервью с клиентом</title>
         <style>
             li {
@@ -47,12 +48,29 @@
                 <div class="large-10 large-offset-2 columns">    
                         <h5>Ответы</h5>
                 </div>
+                <%if (at == 0) {%>
                 <div class="row" id="answers_1" >
                     <div class="large-9 large-offset-3 columns">
                         <a id="yes" href="#" class="button tiny success">Да</a>
                         <a id="no" href="#" class="button tiny secondary">Нет</a>    
                     </div>
                 </div>
+                <%} else {%>
+                <div class="row" id="answers_1_score" >
+                    <div class="large-9 large-offset-3 columns">
+                        <input type="radio" id="score_1" value="1" name="score" class="score"><label for="score_1">1</label>
+                        <input type="radio" id="score_2" value="2" name="score" class="score"><label for="score_2">2</label>    
+                        <input type="radio" id="score_3" value="3" name="score" class="score"><label for="score_3">3</label>    
+                        <input type="radio" id="score_4" value="4" name="score" class="score"><label for="score_4">4</label>    
+                        <input type="radio" id="score_5" value="5" name="score" class="score"><label for="score_5">5</label>    
+                        <input type="radio" id="score_6" value="6" name="score" class="score"><label for="score_6">6</label>    
+                        <input type="radio" id="score_7" value="7" name="score" class="score"><label for="score_7">7</label>   
+                        <input type="radio" id="score_8" value="8" name="score" class="score"><label for="score_8">8</label>    
+                        <input type="radio" id="score_9" value="9" name="score" class="score"><label for="score_9">9</label>    
+                        <input type="radio" id="score_10" value="10" name="score" class="score"><label for="score_10">10</label> 
+                    </div>
+                </div>
+                <%}%>
                 <div class="row" id="answers_2" style="display:none">
                     <%_.each(q.get("answers"), function (a) {%>
                         <div class="large-9 large-offset-3 columns">
@@ -100,7 +118,7 @@
               
             </div>
           </div>
-          <div class="row">
+          <div class="row" style="display:none">
             <div class="small-6 small-centered columns">
               <label>Вы представляетесь
                 <input id="user_name" type="text" placeholder="" value="<%=u.get('name')%>" />
@@ -110,7 +128,7 @@
           <div class="row">
             <div class="small-6 small-centered columns">
               <label>Тип интервью
-                <select id="question_categorys">
+                <select id="answers_type">
                     <option value="0">Да/Нет</option>
                     <option value="1">Баллы</option>
                 </select>
@@ -238,6 +256,9 @@
                     <%})%>
                 </div>
             </div>
+        </script>
+        <script type="text/template" id="stats">
+            статистика
         </script>
     </head>
     <body>
