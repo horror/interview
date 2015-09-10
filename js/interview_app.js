@@ -61,6 +61,12 @@ var APP = {
                 return "!stats/"
             }
         },
+        
+        menu: {
+            "#!start/" : 'Опросить',
+            "#!editor/" : 'Добавить вопрос',
+            "#!stats/" : 'Статистика',
+        },
 
         generate_url: function() {
             var vs = this.view_state;
@@ -456,7 +462,7 @@ var APP = {
         },
 
         refresh: function () {
-            if (this.client.get("name") === null && this.view_state.get("state") !== "start")
+            if (this.client.get("name") === null && this.view_state.get("state") === "questions")
                 location.href = "/";
             
             var self = this;
@@ -510,6 +516,7 @@ var APP = {
 
         render: function(params){
             $(this.el).html(
+                _.template($('#top_menu').html())({menu: this.router.menu}) +
                 _.template($('#' + this.view_state.get('state')).html())($.extend(params, {p: this.view_state.get('params')}, {u: this.user})) 
             );
 

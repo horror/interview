@@ -17,9 +17,31 @@
         <script src="/js/config.js"></script>
         <title>Интервью с клиентом</title>
 
+        <script type="text/template" id="top_menu">
+        <nav class="top-bar" data-topbar role="navigation">
+            <ul class="title-area">
+              <li class="name">
+                <h1><a href="/">Опросник v1.0</a></h1>
+            </ul>
+
+            <section class="top-bar-section">
+              <!-- Right Nav Section -->
+              <ul class="right">
+              </ul>
+
+              <!-- Left Nav Section -->
+              <ul class="left">
+                <%_.each(menu, function (title, href) {%>
+                    <li><a href="<%=href%>"><%=title%></a></li>
+                <%})%>
+              </ul>
+            </section>
+          </nav>
+        </script>
+        
         <script type="text/template" id="questions">
         <%var q = questions.get(p.q_id)%>
-        <div class="row medium-uncollapse large-collapse">
+        <div class="row medium-uncollapse large-collapse panel callout">
             <div class="row" id="menu">
                 <div class="small-3 columns">
                     <a href="#!start/" class="button tiny">Сначала</a>
@@ -133,7 +155,8 @@
         </script>
         
         <script type="text/template" id="start">
-        <div class="row medium-uncollapse large-collapse">
+        <form id="start_form">
+        <div class="row medium-uncollapse large-collapse panel callout">
           <div class="row">
             <div class="small-6 small-centered columns" id="msg_block">
               
@@ -159,7 +182,7 @@
           <div class="row">
             <div class="small-6 small-centered columns">
               <label>Дата обзвона
-                <input id="calling_date" type="text" />
+                <input id="calling_date" type="text" required/>
               </label>
             </div>
           </div>
@@ -195,21 +218,21 @@
           <div class="row">
             <div class="small-6 small-centered columns">
               <label>Берете интервью у клиента
-                <input id="client_name" type="text" placeholder="Имя клиента" value="<%=c.get('name')%>" />
+                <input id="client_name" type="text" placeholder="Имя клиента" value="<%=c.get('name')%>" required />
               </label>
             </div>
           </div>
           <div class="row">
             <div class="small-6 small-centered columns">
               <label>Телефон
-                <input id="client_phone" type="text" placeholder="+7-9XX-XX-XX-XX" value="" />
+                <input id="client_phone" type="text" placeholder="+7-9XX-XX-XX-XX" value="" required />
               </label>
             </div>
           </div>
           <div class="row">
             <div class="small-6 small-centered columns">
               <label>№ реализации
-                <input id="order_no" type="text" placeholder="" value="" />
+                <input id="order_no" type="text" placeholder="" value="" required />
               </label>
             </div>
           </div>
@@ -227,6 +250,7 @@
               <a href="/?controller=users&action=logout" class="button radius">Выйти</a>
           </div>
         </div>   
+        </form>
         </script>
         
         <script type="text/template" id="editor">
@@ -279,7 +303,7 @@
             </div>
         </script>
         <script type="text/template" id="stats">
-            статистика
+            coming soon...
         </script>
     </head>
     <body>
