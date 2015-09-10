@@ -100,14 +100,14 @@ var APP = {
             $.extend(this, options);
 
             var AModel = Backbone.Model.extend({});
-            var ACollection = Backbone.Collection.extend({
+            var A_collection = Backbone.Collection.extend({
                 model: AModel,
                 url: '/?controller=interview&action=get_answers',
             });
             
             var categories = this.settings.categories;
 
-            var QModel = Backbone.Model.extend({
+            var Q_model = Backbone.Model.extend({
                 defaults: {
                     answers: []
                 },
@@ -121,8 +121,8 @@ var APP = {
                     this.get('answers').push(a);
                 }
             });
-            var QCollection = Backbone.Collection.extend({
-                model: QModel,
+            var Q_collection = Backbone.Collection.extend({
+                model: Q_model,
                 url: '/?controller=interview&action=get_questions',
                 add_answers: function (answs) {
                     var self = this;
@@ -134,16 +134,16 @@ var APP = {
                             self.get(a.get("question_id")).get("answers").push(a);
                     })
                 },
-                byCategories: function (categories) {
+                by_categories: function (categories) {
                     var filtered = this.select(function (q) {
                         return categories.indexOf(q.get('category')) !== -1;
                     });
                     filtered = filtered.map(function (i) {return i.attributes})
-                    return new QCollection(filtered);
+                    return new Q_collection(filtered);
                 }
             });
 
-            var UserModel = Backbone.Model.extend({
+            var User_model = Backbone.Model.extend({
                 defaults: {
                     name: null
                 },
@@ -151,22 +151,22 @@ var APP = {
                 url: '/?controller=users&action=get_current',
             });
 
-            var ClientModel = Backbone.Model.extend({
+            var Client_model = Backbone.Model.extend({
                 defaults: {
                     name: null
                 }
                 //localStorage: new Backbone.LocalStorage("client")
             });
 
-            var InterviewModel = Backbone.Model.extend({
+            var Interview_model = Backbone.Model.extend({
                 //localStorage: new Backbone.LocalStorage("client")
                 defaults: {
                     question_id: null,
                     answer: null,
                 },
             });
-            var InterviewCollection = Backbone.Collection.extend({
-                model: InterviewModel,
+            var Interview_collection = Backbone.Collection.extend({
+                model: Interview_model,
                 id: 1,
                 url: '/?controller=interview&action=save_interview',
                 meta: {
@@ -213,20 +213,20 @@ var APP = {
                 //localStorage: new Backbone.LocalStorage("interview")
             });
 
-            this.question_list = new QCollection();
-            this.answers_list = new ACollection();
-            this.interview = new InterviewCollection();
+            this.question_list = new Q_collection();
+            this.answers_list = new A_collection();
+            this.interview = new Interview_collection();
             this.interview_hash = {};
             //this.interview.fetch();
-            this.user = new UserModel({id: 1});
+            this.user = new User_model({id: 1});
             //this.user.fetch();
-            this.client = new ClientModel({id: 1});
+            this.client = new Client_model({id: 1});
             //this.client.fetch();
             this.view_state.bind('change', this.refresh, this);
             //this.interview.bind('add remove', this.refresh, this);
         },
 
-        saveInterviewState: function () {
+        save_interview_state: function () {
             var self = this;
             var searchIDs = $("input[name='answers']:checkbox:checked").map(function(){
                 return $(this).val()*1;
@@ -264,7 +264,7 @@ var APP = {
             
         },
 
-        saveInterview: function () {
+        save_interview: function () {
             var models = $.map(this.interview_hash, function(v) { return v; });
             this.interview.add(models);
             this.interview.meta.user_id = this.user.id;
@@ -310,7 +310,7 @@ var APP = {
             },
 
             'click .next' : function () {
-                this.saveInterviewState();
+                this.save_interview_state();
             },
             'click #yes' : function (event) {
                 event.preventDefault();
@@ -330,16 +330,16 @@ var APP = {
                     question: this.view_state.get('params').q_id,
                     answer: -1
                 });
-                this.saveInterview();
+                this.save_interview();
             }, 
             'click #save' : function (event) {
-                this.saveInterviewState();
-                this.saveInterview();
+                this.save_interview_state();
+                this.save_interview();
             }, 
             'click .last' : function (event) {
                 event.preventDefault();
-                this.saveInterviewState();
-                this.saveInterview();
+                this.save_interview_state();
+                this.save_interview();
                 $("#question").hide();
                 $("#question_last").show();
                 $(".last").removeClass("last").text("Закончить");
@@ -471,7 +471,7 @@ var APP = {
                 switch(self.view_state.get("state")) {
                     case "questions":
                         self.wait_for_questions(function () {
-                            var qs = self.question_list.byCategories(self.interview.question_categories);
+                            var qs = self.question_list.by_categories(self.interview.question_categories);
                             if (self.view_state.get("params").q_id === null)
                                 self.view_state.get("params").q_id = qs.first().get("id");
                             self.render({questions: qs, answers: self.answers_list,  c: self.client, interview: self.interview, interview_hash: self.interview_hash});
