@@ -492,13 +492,19 @@ var APP = {
                         });
                         break;
                     case "start":
-                        self.render({c: self.client});
-                        $("#operator_type").val(0).change();
-                        $('#calling_date').fdatepicker({
-                            format: 'mm-dd-yyyy'
+                        $.post( 
+                            "/?controller=stats&action=get_interviews_count", 
+                            {user_id: self.user.id, date: UTILS.get_current_date()}
+                        ).done(function(interview_cnt) {
+                            self.render({c: self.client, interview_cnt: JSON.parse(interview_cnt)});
+                            $("#operator_type").val(0).change();
+                            $('#calling_date').fdatepicker({
+                                format: 'yyyy-mm-dd'
+                            });
+                            self.interview_hash = {};
+                            self.interview.reset();
                         });
-                        self.interview_hash = {};
-                        self.interview.reset();
+                        
                         break;
                     
                     case "editor":
@@ -516,7 +522,7 @@ var APP = {
 
         render: function(params){
             $(this.el).html(
-                _.template($('#top_menu').html())({menu: this.router.menu}) +
+                _.template($('#top_menu').html())({menu: this.router.menu, interview_cnt: params.interview_cnt}) +
                 _.template($('#' + this.view_state.get('state')).html())($.extend(params, {p: this.view_state.get('params')}, {u: this.user})) 
             );
 

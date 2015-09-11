@@ -14,6 +14,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone-localstorage.js/1.1.16/backbone.localStorage-min.js"></script>
         <script src="/vendors/js/foundation-datepicker.min.js"></script>
         <script src="/js/interview_app.js"></script>
+        <script src="/js/utils.js"></script>
         <script src="/js/config.js"></script>
         <title>Опросник v1.0</title>
 
@@ -27,6 +28,7 @@
             <section class="top-bar-section">
               <!-- Right Nav Section -->
               <ul class="right">
+                <li><span class="label">Количество опросов за сегодня: <%=interview_cnt%></span></a>
                 <li><a href="/?controller=users&action=logout">Выход</a>
               </ul>
 
