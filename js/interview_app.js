@@ -184,9 +184,9 @@ var APP = {
                     shop: 2,  
                     order_no: null,
                     product: null,
+                    answers_type: 0,
                 },
                 question_categories: [0],
-                answers_type: 0,
                 access: true,
                 conut: 0,
                 _sync: function(method, model, options) {
@@ -267,7 +267,7 @@ var APP = {
                 self.interview_hash[q] = {
                     question_id: q,
                     answer: searchIDs,
-                    score: self.interview.answers_type ? score : null
+                    score: self.interview.meta.answers_type ? score : null
                 };
             });
             
@@ -375,7 +375,7 @@ var APP = {
                 this.interview.meta.operator = $("#operator_type").val();
                 this.interview.meta.order_no = $("#order_no").val();
                 this.interview.meta.product = $("#product").val();
-                this.interview.answers_type = $("#answers_type").val();
+                this.interview.meta.answers_type = $("#answers_type").val();
                 this.interview.question_categories = $("#question_categories").val().split(',');
                 $.when(self.check_access()).then(function () { 
                     if (self.interview.access)
@@ -501,7 +501,7 @@ var APP = {
                             $('#calling_date').fdatepicker({
                                 format: 'yyyy-mm-dd'
                             });
-                            $("#answers_type").val(self.interview.answers_type).change();
+                            $("#answers_type").val(self.interview.meta.answers_type).change();
                             $('#calling_date').val(self.interview.meta.calling_date);
                             $("#question_categories").val(self.interview.question_categories.join(",")).change();
                             $("#operator_type").val(self.interview.meta.operator).change();

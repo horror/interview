@@ -65,7 +65,7 @@
                 </div>
                 <div class="small-6 small-centered columns">
                     <%=q.get("content").replace(/User/g, u.get("name")).replace(/Client/g, c.get("name"))%>
-                    <%if (interview.answers_type*1 && q.get("answers").length > 0) {%>
+                    <%if (interview.meta.answers_type*1 && q.get("answers").length > 0) {%>
                         Оцените, пожалуйста, по 10 бальной шкале.
                     <%}%>
                 </div>
@@ -73,7 +73,7 @@
                 <div class="large-10 large-offset-2 columns">    
                         <h5>Ответы</h5>
                 </div>
-                <%if (interview.answers_type*1 && q.get("answers").length > 0) {%>
+                <%if (interview.meta.answers_type*1 && q.get("answers").length > 0) {%>
                     <div class="row" id="answers_1_score" >
                         <div class="large-9 large-offset-3 columns">
                             <input type="radio" id="score_1" value="1" name="score" class="score"><label for="score_1">1</label>
@@ -125,7 +125,7 @@
                             <h5>Последний ответ</h5>
                         </div>
                         <div class="large-9 large-offset-3 columns">
-                            <%if (interview.answers_type*1 && q.get("answers").length > 0) {%>
+                            <%if (interview.meta.answers_type*1 && q.get("answers").length > 0) {%>
                                 <span class="info label"><%=score%> очков</span>
                             <%} else {%>
                                 <span class="<%=(ans[0] == 0) ? 'success' : 'secondary' %> label"><%=(ans[0] == 0) ? 'Да' : 'Нет' %></span>
