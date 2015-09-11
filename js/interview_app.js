@@ -1,4 +1,4 @@
-var APP = {
+var APP = { 
     View_state: Backbone.Model.extend({
         defaults: {
             state: null,
@@ -177,16 +177,18 @@ var APP = {
                 url: '/?controller=interview&action=save_interview',
                 meta: {
                     user_id: null,
-                    calling_date: null,
+                    calling_date: '',
                     client: null,
                     client_phone: null,
-                    shop: null,  
+                    operator: 0,
+                    shop: 2,  
                     order_no: null,
-                    product: null
+                    product: null,
                 },
-                question_categories: null,
-                answers_type: null,
+                question_categories: [0],
+                answers_type: 0,
                 access: true,
+                conut: 0,
                 _sync: function(method, model, options) {
 
                     if( model && (method === 'create' || method === 'update' || method === 'patch') ) {
@@ -256,7 +258,7 @@ var APP = {
             else {
                 d.resolve();
                 if ($("#answers_3").is(":visible"))
-                    searchIDs.push(0);
+                    searchIDs.push(self.settings.special_answers.yes_id);
             }
             
             $.when(d.promise()).then(function () {
@@ -334,8 +336,9 @@ var APP = {
             }, 
             'click #abort' : function (event) {
                 this.interview.add({
-                    question: this.view_state.get('params').q_id,
-                    answer: -1
+                    question_id: this.view_state.get('params').q_id,
+                    answer: [this.settings.special_answers.no_id],
+                    score: null
                 });
                 this.save_interview();
             }, 
@@ -369,6 +372,7 @@ var APP = {
                 this.client.set({phone: $("#client_phone").val()});
                 this.interview.meta.calling_date = $("#calling_date").val();
                 this.interview.meta.shop = $("#shop").val();
+                this.interview.meta.operator = $("#operator_type").val();
                 this.interview.meta.order_no = $("#order_no").val();
                 this.interview.meta.product = $("#product").val();
                 this.interview.answers_type = $("#answers_type").val();
@@ -379,12 +383,6 @@ var APP = {
                     else
                         $("#msg_block").html('<span class="alert round label">Вы не имеете доступа к этому магазину по данной дате обзвона</span>');
                 });
-            },
-            'click #question_categories' : function () {
-                if ($("#question_categories").val() == 2)
-                    $("#shop_block").hide()
-                else
-                    $("#shop_block").show();
             },
             'change #operator_type' : function () {
                 $("#shop option").remove();
@@ -497,13 +495,21 @@ var APP = {
                             "/?controller=stats&action=get_interviews_count", 
                             {user_id: self.user.id, date: UTILS.get_current_date()}
                         ).done(function(interview_cnt) {
-                            self.render({c: self.client, interview_cnt: JSON.parse(interview_cnt)});
-                            $("#operator_type").val(0).change();
+                            self.interview.count = JSON.parse(interview_cnt);
+                            self.render({});
+                            
                             $('#calling_date').fdatepicker({
                                 format: 'yyyy-mm-dd'
                             });
+                            $("#answers_type").val(self.interview.answers_type).change();
+                            $('#calling_date').val(self.interview.meta.calling_date);
+                            $("#question_categories").val(self.interview.question_categories.join(",")).change();
+                            $("#operator_type").val(self.interview.meta.operator).change();
+                            $("#shop").val(self.interview.meta.shop).change();
+
                             self.interview_hash = {};
                             self.interview.reset();
+                            
                         });
                         
                         break;
@@ -527,7 +533,7 @@ var APP = {
 
         render: function(params){
             $(this.el).html(
-                _.template($('#top_menu').html())({menu: this.router.menu, interview_cnt: params.interview_cnt}) +
+                _.template($('#top_menu').html())({menu: this.router.menu, interview_cnt: this.interview.count}) +
                 _.template($('#' + this.view_state.get('state')).html())($.extend(params, {p: this.view_state.get('params')}, {u: this.user})) 
             );
 

@@ -153,7 +153,7 @@
                     <% if ((another_q = questions.get(p.q_id).get_relative(1)) != undefined) {%>
                         <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav next">Следующий</a>
                     <% } else { %>
-                        <a href="#!start/" class="button radius centered nav last">Прощаться</a>
+                        <a href="#!start/" class="button success radius centered nav last">Прощаться</a>
                     <% } %>
                 </div>
             </div>
@@ -224,7 +224,7 @@
           <div class="row">
             <div class="small-6 small-centered columns">
               <label>Берете интервью у клиента
-                <input id="client_name" type="text" placeholder="Имя клиента" value="<%=c.get('name')%>" required />
+                <input id="client_name" type="text" placeholder="Имя клиента" required />
               </label>
             </div>
           </div>
