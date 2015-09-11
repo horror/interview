@@ -120,7 +120,6 @@ CREATE TABLE IF NOT EXISTS `i_interview_meta` (
   `shop` int(3) DEFAULT NULL,
   `client_phone` varchar(12) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `order_no` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  `product` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `calling_date` date DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;

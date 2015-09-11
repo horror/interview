@@ -8,4 +8,6 @@ class stats_controller extends controller
         
         $this->view->render('json', $count);
     }
+    
+    
 }
