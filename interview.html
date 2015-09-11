@@ -28,7 +28,7 @@
             <section class="top-bar-section">
               <!-- Right Nav Section -->
               <ul class="right">
-                <li><span class="label">Количество опросов за сегодня: <%=interview_cnt%></span></a>
+                <li><span class="<%=interview_cnt > 0 ? 'success' : ''%> label">Количество опросов за сегодня: <%=interview_cnt%></span></a>
                 <li><a href="/?controller=users&action=logout">Выход</a>
               </ul>
 
@@ -65,6 +65,9 @@
                 </div>
                 <div class="small-6 small-centered columns">
                     <%=q.get("content").replace(/User/g, u.get("name")).replace(/Client/g, c.get("name"))%>
+                    <%if (interview.answers_type*1 && q.get("answers").length > 0) {%>
+                        Оцените, пожалуйста, по 10 бальной шкале.
+                    <%}%>
                 </div>
                 
                 <div class="large-10 large-offset-2 columns">    

@@ -491,6 +491,7 @@ var APP = {
                             self.render({questions: qs, answers: self.answers_list,  c: self.client, interview: self.interview, interview_hash: self.interview_hash});
                         });
                         break;
+                        
                     case "start":
                         $.post( 
                             "/?controller=stats&action=get_interviews_count", 
@@ -513,6 +514,10 @@ var APP = {
                         });
                         break;
                         
+                    case "stats": 
+                        self.render({});
+                        break;
+                    
                     default: 
                         self.render({});
                         break;
