@@ -437,6 +437,7 @@ var APP = {
                 series_params.color = $("input[name='color']:checked").val();
                 series_params.user = $("#user").val();
                 series_params.shop = $("#shop").val();
+                series_params.aborted = $("input[name='aborted']:checked").val();
                 CHARTS.add_new_series(series_params);
                 this.update_url_params(CHARTS.settings());
                 this.render({chart: CHARTS});

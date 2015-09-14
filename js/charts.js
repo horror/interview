@@ -24,9 +24,18 @@ var CHARTS =  {
         this.group_by_xaxes_value = {
             q_categories: function (idx) { return idx; },
         };
+        
         this.interviews_list = this.prepare(data.interviews_list);
         this.interview_logs = data.interview_logs;
         this.users = data.users;
+        this.questions = data.questions;
+        this.questions_category_sum = {};
+        for (var i in this.questions) {
+            var q_cat = this.questions[i].category;
+            if (this.questions_category_sum[q_cat] === undefined)
+                this.questions_category_sum[q_cat] = 0;
+            this.questions_category_sum[q_cat]++;
+        }
     },
     
     prepare: function (i_list) {
@@ -137,7 +146,8 @@ var CHARTS =  {
                 var f = q_categories[i.question_category] && 
                     q_types[i.answers_type] && 
                     (params.shop === null || i.shop === params.shop) &&
-                    (new RegExp(params.user)).test(self.users[i.user_id].name);
+                    (new RegExp(params.user)).test(self.users[i.user_id].name) &&
+                    (!params.aborted || i.ans_cnt < self.questions_category_sum[i.question_category]);
                 return f;
             }).
             groupBy(self.group_by[params.group_by]);
