@@ -25,7 +25,7 @@ var CHARTS =  {
             q_categories: function (idx) { return idx; },
         };
         
-        this.interviews_list = this.prepare(data.interviews_list);
+        
         this.interview_logs = data.interview_logs;
         this.users = data.users;
         this.questions = data.questions;
@@ -36,6 +36,8 @@ var CHARTS =  {
                 this.questions_category_sum[q_cat] = 0;
             this.questions_category_sum[q_cat]++;
         }
+        
+        this.interviews_list = this.prepare(data.interviews_list);
     },
     
     prepare: function (i_list) {
@@ -43,7 +45,11 @@ var CHARTS =  {
         for (var i in i_list) {
             var c = i_list[i].question_categories.split(",");
             for (var c_idx in c) 
-                    list.push($.extend({question_category: c[c_idx]}, i_list[i]));
+                    list.push($.extend(
+                        {question_category: c[c_idx]}, 
+                        i_list[i], 
+                        {ans_cnt: c[c_idx] == 1 ? i_list[i].ans_cnt - this.questions_category_sum[0] : i_list[i].ans_cnt }
+                    ));
         }
         return list;
     }, 
