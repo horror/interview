@@ -16,10 +16,11 @@ class interview_controller extends controller
     public function save_interview_action($params)
     {
         $data = json_decode(file_get_contents('php://input'), true);
-        $data['meta'] = arr::extract($data['meta'], ['user_id', 'client', 'client_phone', 'calling_date', 'order_no', 'shop', 'answers_type']);
+        $data['meta'] = arr::extract($data['meta'], ['user_id', 'client', 'client_phone', 'calling_date', 'order_no', 'shop', 'answers_type', 'question_categories']);
         $data['meta']['date'] = date('Y-m-d H:i:s');
-        db::exec($this->db, "INSERT INTO i_interview_meta (date, user_id, client, client_phone, calling_date, order_no, shop, answers_type) "
-                . "VALUES(:date, :user_id, :client, :client_phone, :calling_date, :order_no, :shop, :answers_type)", $data['meta']);
+        $data['meta']['question_categories'] = implode(",", $data['meta']['question_categories']);
+        db::exec($this->db, "INSERT INTO i_interview_meta (date, user_id, client, client_phone, calling_date, order_no, shop, answers_type, question_categories) "
+                . "VALUES(:date, :user_id, :client, :client_phone, :calling_date, :order_no, :shop, :answers_type, :question_categories)", $data['meta']);
         $curr_meta = db::last_id($this->db);
         $interview = $data["interview"];
         foreach ($interview as $i) {

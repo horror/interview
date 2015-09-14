@@ -16,7 +16,7 @@ var APP = {
             "!questions/(:id/)": "show_questions",
             "!start/": "show_start",
             "!editor/": "show_editor",
-            "!stats/": "show_stats",
+            "!stats/(:params/)": "show_stats",
         },
 
         show_questions: function (id) {
@@ -40,16 +40,17 @@ var APP = {
             });
         },
         
-        show_stats: function () {
+        show_stats: function (params) {
             this.view_state.set({
-                state: "stats"
+                state: "stats",
+                params: JSON.parse(params),
             });
         },
 
         url_generators: {
             questions: function (vs) {
                 var id = vs.get("params").q_id;
-                return "!questions/" + (id != null ? (id + "/") : "");
+                return "!questions/" + (id !== null ? (id + "/") : "");
             },
             start: function () {
                 return "!start/"
@@ -57,8 +58,9 @@ var APP = {
             editor: function () {
                 return "!editor/"
             },
-            stats: function () {
-                return "!stats/"
+            stats: function (vs) {
+                var p = vs.get("params");
+                return "!stats/" + (p !== null ? (JSON.stringify(p) + "/") : "")
             }
         },
         
@@ -185,8 +187,8 @@ var APP = {
                     order_no: null,
                     product: null,
                     answers_type: 0,
+                    question_categories: [0],
                 },
-                question_categories: [0],
                 access: true,
                 conut: 0,
                 _sync: function(method, model, options) {
@@ -311,6 +313,11 @@ var APP = {
             $("#answers_2").hide(); 
             $("#answers_4").hide(); 
         },
+        
+        update_url_params: function (params) {
+            this.view_state.set({params: params}, {silent: true});
+            window.history.pushState('', '', '#' + this.router.generate_url());
+        },
 
         events: {
             //questions
@@ -368,15 +375,14 @@ var APP = {
                 }
                 var self = this;
                 this.user.set({name: $("#user_name").val()});
-                this.client.set({name: $("#client_name").val()});
-                this.client.set({phone: $("#client_phone").val()});
+                this.client.set({name: $("#client_name").val(), phone: $("#client_phone").val()});
                 this.interview.meta.calling_date = $("#calling_date").val();
                 this.interview.meta.shop = $("#shop").val();
                 this.interview.meta.operator = $("#operator_type").val();
                 this.interview.meta.order_no = $("#order_no").val();
                 this.interview.meta.product = $("#product").val();
                 this.interview.meta.answers_type = $("#answers_type").val();
-                this.interview.question_categories = $("#question_categories").val().split(',');
+                this.interview.meta.question_categories = $("#question_categories").val().split(',');
                 $.when(self.check_access()).then(function () { 
                     if (self.interview.access)
                         location.href = "#!questions/";
@@ -419,8 +425,30 @@ var APP = {
                     this.show_default_answers();
                 else
                     this.hide_default_answers();
-            }
+            },
             //stats
+            'click #add_series': function () {
+                var series_params = {};
+                series_params.parameter = $("#parameter").val();
+                series_params.aggregation = $("#aggregation").val();
+                series_params.group_by = $("#group_by").val();
+                series_params.q_categories = $('input[name="q_categories"]:checked').map(function() { return $(this).val(); }).get();
+                series_params.q_types = $('input[name="q_types"]:checked').map(function() { return $(this).val(); }).get();
+                series_params.color = $("input[name='color']:checked").val();
+                CHARTS.add_new_series(series_params);
+                this.update_url_params(CHARTS.settings());
+                this.render({chart: CHARTS});
+            },
+            'change #chart_type': function () {
+                CHARTS.chart_type =  $("#chart_type").val();
+                this.update_url_params(CHARTS.settings());
+                this.render({chart: CHARTS});
+            },
+            'click .delete_series': function (event) {
+                CHARTS.delete_series($(event.currentTarget).data('series'));
+                this.update_url_params(CHARTS.settings());
+                this.render({chart: CHARTS});
+            }
         },
 
         update_qestions: function () {
@@ -483,7 +511,7 @@ var APP = {
                 switch(self.view_state.get("state")) {
                     case "questions":
                         self.wait_for_questions(function () {
-                            var qs = self.question_list.by_categories(self.interview.question_categories);
+                            var qs = self.question_list.by_categories(self.interview.meta.question_categories);
                             if (self.view_state.get("params").q_id === null)
                                 self.view_state.get("params").q_id = qs.first().get("id");
                             self.render({questions: qs, answers: self.answers_list,  c: self.client, interview: self.interview, interview_hash: self.interview_hash});
@@ -503,7 +531,7 @@ var APP = {
                             });
                             $("#answers_type").val(self.interview.meta.answers_type).change();
                             $('#calling_date').val(self.interview.meta.calling_date);
-                            $("#question_categories").val(self.interview.question_categories.join(",")).change();
+                            $("#question_categories").val(self.interview.meta.question_categories.join(",")).change();
                             $("#operator_type").val(self.interview.meta.operator).change();
                             $("#shop").val(self.interview.meta.shop).change();
 
@@ -521,7 +549,14 @@ var APP = {
                         break;
                         
                     case "stats": 
-                        self.render({});
+                        $.post( 
+                            "/?controller=stats&action=get_interviews_list"
+                        ).done(function(interviews_list) {
+                            CHARTS.init(JSON.parse(interviews_list));
+                            CHARTS.settings(self.view_state.get('params'));
+                            self.render({chart: CHARTS});
+                        });
+                        
                         break;
                     
                     default: 

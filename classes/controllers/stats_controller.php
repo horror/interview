@@ -9,5 +9,10 @@ class stats_controller extends controller
         $this->view->render('json', $count);
     }
     
-    
+    public function get_interviews_list_action($params)
+    {
+        $i = db::exec($this->db, "SELECT * FROM i_interview_meta", null);
+        
+        $this->view->render('json', $i);
+    }
 }
