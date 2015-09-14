@@ -45,6 +45,7 @@ var CHARTS =  {
         for (var i in i_list) {
             var c = i_list[i].question_categories.split(",");
             for (var c_idx in c) 
+                if (c[c_idx] != 1 || i_list[i].ans_cnt >= this.questions_category_sum[0])
                     list.push($.extend(
                         {question_category: c[c_idx]}, 
                         i_list[i], 
