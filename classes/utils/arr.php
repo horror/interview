@@ -8,6 +8,14 @@ class arr {
         }
         return $found;
     }
+    
+    public static function array_to_hash_id($array) {
+        $r = [];
+        foreach ($array as $i) {
+            $r[$i['id']] = $i;
+        }
+        return $r;
+    }
 
     public static function is_all_values_not_null($array) {
         foreach ($array as $k => $v) {

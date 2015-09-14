@@ -1,5 +1,5 @@
 var CHARTS =  {
-    init: function (interviews_list) {
+    init: function (data) {
         this.series = [];
         this.series_params = [];
         this.chart_type = "line";
@@ -24,14 +24,16 @@ var CHARTS =  {
         this.group_by_xaxes_value = {
             q_categories: function (idx) { return idx; },
         };
-        this.interviews_list = this.prepare(interviews_list);
+        this.interviews_list = this.prepare(data.interviews_list);
+        this.interview_logs = data.interview_logs;
+        this.users = data.users;
     },
     
     prepare: function (i_list) {
         var list = [];
-        for (i in i_list) {
+        for (var i in i_list) {
             var c = i_list[i].question_categories.split(",");
-            for (c_idx in c) 
+            for (var c_idx in c) 
                     list.push($.extend({question_category: c[c_idx]}, i_list[i]));
         }
         return list;
@@ -68,7 +70,7 @@ var CHARTS =  {
 
     settings: function(settings) {
         var self = this;
-        if (settings != undefined) {
+        if (settings !== undefined && settings !== null) {
             this.series = [];
             this.series_params = [];
             this.series = [];
@@ -135,8 +137,7 @@ var CHARTS =  {
                 var f = q_categories[i.question_category] && 
                     q_types[i.answers_type] && 
                     (params.shop === null || i.shop === params.shop) &&
-                    (new RegExp(params.user)).test('123');
-                console.log(f);
+                    (new RegExp(params.user)).test(self.users[i.user_id].name);
                 return f;
             }).
             groupBy(self.group_by[params.group_by]);

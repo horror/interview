@@ -11,8 +11,10 @@ class stats_controller extends controller
     
     public function get_interviews_list_action($params)
     {
-        $i = db::exec($this->db, "SELECT * FROM i_interview_meta", null);
+        $i_meta = db::exec($this->db, "SELECT * FROM i_interview_meta", null);
+        $i = arr::array_to_hash_id(db::exec($this->db, "SELECT * FROM i_interview", null));
+        $u = arr::array_to_hash_id(db::exec($this->db, "SELECT * FROM i_users", null));
         
-        $this->view->render('json', $i);
+        $this->view->render('json', ['interviews_list' => $i_meta, 'interview_logs' => $i, 'users' => $u]);
     }
 }
