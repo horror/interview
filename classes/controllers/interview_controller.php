@@ -19,7 +19,7 @@ class interview_controller extends controller
         $data['meta'] = arr::extract($data['meta'], ['user_id', 'client', 'client_phone', 'calling_date', 'order_no', 'shop', 'answers_type']);
         $data['meta']['date'] = date('Y-m-d H:i:s');
         db::exec($this->db, "INSERT INTO i_interview_meta (date, user_id, client, client_phone, calling_date, order_no, shop, answers_type) "
-                . "VALUES(:date, :user_id, :client, :client_phone, :calling_date, :order_no, :product, :shop, :answers_type)", $data['meta']);
+                . "VALUES(:date, :user_id, :client, :client_phone, :calling_date, :order_no, :shop, :answers_type)", $data['meta']);
         $curr_meta = db::last_id($this->db);
         $interview = $data["interview"];
         foreach ($interview as $i) {
