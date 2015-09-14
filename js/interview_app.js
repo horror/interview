@@ -435,6 +435,8 @@ var APP = {
                 series_params.q_categories = $('input[name="q_categories"]:checked').map(function() { return $(this).val(); }).get();
                 series_params.q_types = $('input[name="q_types"]:checked').map(function() { return $(this).val(); }).get();
                 series_params.color = $("input[name='color']:checked").val();
+                series_params.user = $("#user").val();
+                series_params.shop = $("#shop").val();
                 CHARTS.add_new_series(series_params);
                 this.update_url_params(CHARTS.settings());
                 this.render({chart: CHARTS});
@@ -537,7 +539,6 @@ var APP = {
 
                             self.interview_hash = {};
                             self.interview.reset();
-                            
                         });
                         
                         break;
@@ -569,7 +570,14 @@ var APP = {
         render: function(params){
             $(this.el).html(
                 _.template($('#top_menu').html())({menu: this.router.menu, interview_cnt: this.interview.count}) +
-                _.template($('#' + this.view_state.get('state')).html())($.extend(params, {p: this.view_state.get('params')}, {u: this.user})) 
+                _.template($('#' + this.view_state.get('state')).html())(
+                    $.extend(
+                        params, 
+                        {p: this.view_state.get('params')}, 
+                        {u: this.user},
+                        {settings: this.settings}
+                    )
+                ) 
             );
 
             return this;

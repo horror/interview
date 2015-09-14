@@ -362,6 +362,15 @@
                                 %>
                             </div>
                         </div>
+                        <div>
+                            <label>Оператор <input type="text" size="20" id="user" placeholder=".*?" value="<%//u.get('name')%>"></label>
+                        </div>
+                        <div>
+                            <label>Магазин
+                                <select id="shop">
+                                </select>
+                            </label>
+                        </div>
                     </div>
                     <div>
                         <label>Цвет</label>
@@ -430,7 +439,7 @@
                         ],
                         legend: {
                             labelFormatter: function(label, series) {
-                              return label + ' <a class="delete_series" data-series="' + series.id + '" href="#" onClick="return false;"> del</a>';
+                              return ' <a class="delete_series" data-series="' + series.id + '" href="#" onClick="return false;"> Удалить</a>';
                             }
                         }
                         });
@@ -452,6 +461,16 @@
                         $("#plot").html("<pre id='json'>" + UTILS.syntaxHighlight(JSON.stringify(<%=JSON.stringify(chart.series_pie_format())%>, null, 2)) + "</pre>");
                     <%}%>
                     $("#parameter").change();
+                    $("#shop option").remove();
+                    var shops_list = <%=JSON.stringify(_.union(settings.operator_shop_ref[0], settings.operator_shop_ref[1]))%>
+                    _.each(shops_list.sort(function(a,b) {
+                            return (+a) - (+b);
+                        }), function (shop) {
+                            $("#shop").append("\
+                                <option value='" + shop + "'>СП-" + shop + "</option>"
+                            );
+                    })
+                    $("#shop").val(-1).change();
                 </script>
             </div>
         </div>

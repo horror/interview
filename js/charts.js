@@ -73,9 +73,9 @@ var CHARTS =  {
             this.series_params = [];
             this.series = [];
             this.chart_type = settings.chart_type;
-            _.each(settings.params, function (v) { self.add_new_series(self.params_unpack(v)); });
+            _.each(settings.params, function (v) { self.add_new_series(v); });
         }
-        return {chart_type: this.chart_type, params: _.map(this.series_params, function (v) { return self.params_pack(v); })};
+        return {chart_type: this.chart_type, params: _.map(this.series_params, function (v) { return v; })};
     },
 
     parameter_yaxes: {
@@ -132,8 +132,12 @@ var CHARTS =  {
         var q_types = _.countBy(params.q_types, _.identity);
         return _.chain(self.interviews_list).
             filter(function (i) {
-                return (
-                    q_categories[i.question_category] && q_types[i.answers_type]);
+                var f = q_categories[i.question_category] && 
+                    q_types[i.answers_type] && 
+                    (params.shop === null || i.shop === params.shop) &&
+                    (new RegExp(params.user)).test('123');
+                console.log(f);
+                return f;
             }).
             groupBy(self.group_by[params.group_by]);
     },
