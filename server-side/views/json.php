@@ -1,1 +1,1 @@
-<?=json_encode($params)?>
+<?= json_encode($params) ?>

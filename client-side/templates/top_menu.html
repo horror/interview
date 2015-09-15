@@ -1,0 +1,20 @@
+<nav class="top-bar" data-topbar role="navigation">
+    <ul class="title-area">
+        <li class="name">
+            <h1><a href="/">Опросник v1.0</a></h1>
+    </ul>
+
+    <section class="top-bar-section">
+        <ul class="right">
+            <li><span class="<%=interview_cnt > 0 ? 'success' : ''%> label">Количество опросов за сегодня: <%=interview_cnt%></span></a>
+            <li><a href="/?controller=users&action=logout">Выход</a>
+        </ul>
+
+        <!-- Left Nav Section -->
+        <ul class="left">
+            <%_.each(menu, function (title, href) {%>
+            <li><a href="<%=href%>"><%=title%></a></li>
+            <%})%>
+        </ul>
+    </section>
+</nav>

@@ -1,0 +1,115 @@
+<%var q = questions.get(p.q_id)%>
+<div class="row medium-uncollapse large-collapse panel callout">
+    <div class="row" id="menu">
+        <div class="small-3 columns">
+            <a href="#!start/" class="button tiny">Сначала</a>
+            <a href="#!start/" id="save" class="button tiny">Сохранить</a>
+        </div>
+    </div>
+    <div class="row panel" id="question_last" style="display:none">
+        <div class="small-6 small-centered columns">
+            <%=c.get("name")%>, спасибо за участие в опросе, ваше мнение очень важно для нас! Ждем вас в наших магазинах. Всего доброго, до свидания!
+        </div>
+    </div>
+    <div class="row panel" id="question">
+        <div class="large-10 large-offset-2 columns">    
+            <h4><%=q.get_category_name()%></h4>
+        </div>
+        <div class="large-10 large-offset-2 columns">    
+            <h5>Вопрос</h5>
+        </div>
+        <div class="small-6 small-centered columns">
+            <%=q.get("content").replace(/User/g, u.get("name")).replace(/Client/g, c.get("name"))%>
+            <%if (interview.meta.answers_type*1 && q.get("answers").length > 0) {%>
+            Оцените, пожалуйста, по 10 бальной шкале.
+            <%}%>
+        </div>
+
+        <div class="large-10 large-offset-2 columns">    
+            <h5>Ответы</h5>
+        </div>
+        <%if (interview.meta.answers_type*1 && q.get("answers").length > 0) {%>
+        <div class="row" id="answers_1_score" >
+            <div class="large-9 large-offset-3 columns">
+                <input type="radio" id="score_1" value="1" name="score" class="score"><label for="score_1">1</label>
+                <input type="radio" id="score_2" value="2" name="score" class="score"><label for="score_2">2</label>    
+                <input type="radio" id="score_3" value="3" name="score" class="score"><label for="score_3">3</label>    
+                <input type="radio" id="score_4" value="4" name="score" class="score"><label for="score_4">4</label>    
+                <input type="radio" id="score_5" value="5" name="score" class="score"><label for="score_5">5</label>    
+                <input type="radio" id="score_6" value="6" name="score" class="score"><label for="score_6">6</label>    
+                <input type="radio" id="score_7" value="7" name="score" class="score"><label for="score_7">7</label>   
+                <input type="radio" id="score_8" value="8" name="score" class="score"><label for="score_8">8</label>    
+                <input type="radio" id="score_9" value="9" name="score" class="score"><label for="score_9">9</label>    
+                <input type="radio" id="score_10" value="10" name="score" class="score"><label for="score_10">10</label> 
+            </div>
+        </div>
+        <%} else {%>
+        <div class="row" id="answers_1" >
+            <div class="large-9 large-offset-3 columns">
+                <a id="yes" href="#" class="button tiny success">Да</a>
+                <a id="no" href="#" class="button tiny secondary">Нет</a>    
+            </div>
+        </div>
+        <%}%>
+        <div class="row" id="answers_2" style="display:none">
+            <%_.each(q.get("answers"), function (a) {%>
+            <div class="large-9 large-offset-3 columns">
+                <input type="checkbox" id="<%=a.id%>" name="answers" value="<%=a.id%>"><label for="<%=a.id%>"><%=a.get("content")%></label>
+            </div>
+            <%})%>
+            <div class="large-9 large-offset-3 columns">
+                <label for="other_answer">Другое</label><input type="text" id="other_answer">
+            </div>
+        </div>
+        <div class="row" id="answers_3" style="display:none">
+            <div class="large-9 large-offset-3 columns">
+                <span class="success round label">Ура! Вопросы закончились!</span>
+            </div>
+        </div>
+        <div class="row" id="answers_4" style="display:none">
+            <div class="large-9 large-offset-3 columns">
+                <span class="secondary round label">Ну вот! =(</span>
+                <a href="#!start/" id="abort" class="button secondary">Закончить</a>
+            </div>
+        </div>
+        <%if (interview_hash[q.id] != undefined) {%>
+        <div class="row" id="last_answer">
+            <%var ans = interview_hash[q.id].answer%>
+            <%var score = interview_hash[q.id].score%>
+            <div class="large-10 large-offset-2 columns">    
+                <h5>Последний ответ</h5>
+            </div>
+            <div class="large-9 large-offset-3 columns">
+                <%if (interview.meta.answers_type*1 && q.get("answers").length > 0) {%>
+                <span class="info label"><%=score%> очков</span>
+                <%} else {%>
+                <span class="<%=(ans[0] == 1) ? 'success' : 'secondary' %> label"><%=(ans[0] == 1) ? 'Да' : 'Нет' %></span>
+                <%}%>
+            </div>
+            <div class="large-9 large-offset-3 columns">
+                <ul>
+                    <%_.each(ans, function (a) {%>
+                    <%if (a == 0) return;%>
+                    <li><%=answers.get(a).get('content')%></li>
+                    <%})%>
+                </ul>
+            </div>
+        </div>
+        <%}%>
+    </div>
+    <%var another_q;%>
+    <div class="row">
+        <div class="small-6 columns text-center">
+            <% if ((another_q = questions.get(p.q_id).get_relative(-1)) != undefined) {%>
+            <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav prev">Предыдущий</a>
+            <% } %>
+        </div>
+        <div class="small-6 columns text-center">
+            <% if ((another_q = questions.get(p.q_id).get_relative(1)) != undefined) {%>
+            <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav next">Следующий</a>
+            <% } else { %>
+            <a href="#!start/" class="button success radius centered nav last">Прощаться</a>
+            <% } %>
+        </div>
+    </div>
+</div>   

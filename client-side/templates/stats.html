@@ -1,0 +1,166 @@
+<div class="row">
+    <div class="large-6 columns">
+        <h2>Добавить новый график:</h2>
+        <div class="box">
+            <div>
+                <label>Ось У</label>
+                <select id="parameter">
+                    <option value="call_cnt">Колличество звонков</option>
+                </select>
+            </div>
+            <div>
+                <label>Ось Х</label>
+                <select id="group_by">
+                    <%
+                        _.each(chart.group_by_labels, function (label, name) {
+                    %>
+                    <option value="<%=name%>"><%=label%></option>
+                    <%
+                        });
+                    %>
+                </select>
+            </div>
+            <div>
+                <label>Агрегация</label>
+                <select id="aggregation">
+                    <option value="sum">Сумма</option>
+                    <option value="avg">Среднее</option>
+                    <option value="min">Минимум</option>
+                    <option value="max">Максимум</option>
+                </select>
+            </div>
+            <div class="parameter_params" id="call_cnt_params">
+                <div>
+                    <label>Тип опроса</label>
+                    <div>
+                        <input class="selector" type="checkbox" name="q_types" checked="checked" value="0" /><strong>ДА/НЕТ</strong>
+                        <input class="selector" type="checkbox" name="q_types" checked="checked" value="1" /><strong>Баллы</strong>
+                    </div>
+                </div>
+                <div>
+                    <label>Категории вопросов</label>
+                    <div id="q_categories">
+                        <%
+                        for(var c in chart.q_categories) {
+                        %>
+                        <input class="selector" name="q_categories" type="checkbox" value="<%=c%>" checked="checked" title="<%=chart.q_categories[c]%>"/><strong><%=chart.q_categories[c]%></strong>
+                        <%
+                        }
+                        %>
+                    </div>
+                </div>
+                <label>Завершенность</label>
+                <div>
+                    <input class="selector" name="aborted" value="1" type="checkbox"/><strong>Отказ</strong>
+                </div>
+                <div>
+                    <label>Оператор <input type="text" size="20" id="user" placeholder=".*?" value="<%//u.get('name')%>"></label>
+                </div>
+                <div>
+                    <label>Магазин
+                        <select id="shop">
+                        </select>
+                    </label>
+                </div>
+
+            </div>
+            <div>
+                <label>Цвет</label>
+                <%
+                for(var i = 0; i < chart.colors.length; ++i) {
+                %>
+                <input class="selector" type="radio" name="color" value="<%=chart.colors[i]%>"><span style="background:<%=chart.colors[i]%>">[]</span>
+                <%
+                };
+                %>
+            </div>
+            <div><button id="add_series">Добавить</button></div>
+        </div>
+        <div>
+            <h2>Тип графика:</h2>
+            <select id="chart_type">
+                <option value="line">Координатная плоскость</option>
+                <option value="pie">Круговые диаграммы</option>
+                <option value="text">Текст</option>
+            </select>
+        </div>
+        <%if (chart.chart_type !== "pie") {%>
+        <div class="plot_container"><div class="plot" id="plot"></div></div>
+        <%}
+        else for (var i = 0; i < chart.series.length; ++i) {
+        %>
+
+        <div class="pie large-6 columns"><div class="plot" id="plot_<%=i%>"></div></div>
+        <%
+        };
+        %>
+        <script>
+            $("#parameter").change(function () {
+            $(".parameter_params").css("display", "none");
+                    $("#" + $("#parameter").val() + "_params").css("display", "block");
+            });
+                    $("#chart_type").val("<%=chart.chart_type%>");
+                    <% if (chart.chart_type === "line") { %>
+                    $.plot("#plot", <%= JSON.stringify(chart.series) %> , {
+                    series: {
+                    bars: {
+                    show: true,
+                            lineWidth: 0, // in pixels
+                            barWidth: 0.9, // in units of the x axis
+                            align: "center", // "left", "right", or "center"
+                            horizontal: false,
+                            zero: true,
+                    }
+                    },
+                            xaxes: [
+                            { position: 'bottom', ticks: [
+                                    <%
+                                    var idx = 0;
+                                    _.each(chart.q_categories, function (cat) {
+                                    %>
+                                            [ <%=idx++%> , "<%=cat%>"],
+                                            <%
+                                    });
+                                    %>
+                            ], axisLabel: 'Категории вопросов' }
+                            ],
+                            yaxes: [
+                            { position: 'left', axisLabel: 'Количество звонков' },
+                            ],
+                            legend: {
+                            labelFormatter: function(label, series) {
+                            return ' <a class="delete_series" data-series="' + series.id + '" href="#" onClick="return false;"> Удалить</a>';
+                            }
+                            }
+                    });
+                    <% }
+            else if (chart.chart_type === "pie") { %>
+                    var series = <%= JSON.stringify(chart.series_pie_format()) %> ;
+                    for (var i = 0; i < series.length; ++i) {
+            $.plot("#plot_" + i, series[i], {
+            series: {
+            pie: {show: true}
+            },
+                    legend: {
+                    show: false
+                    }
+            });
+            }
+            <% }
+            else { %>
+                    $("#plot").html("<pre id='json'>" + APP.utils.syntaxHighlight(JSON.stringify( <%= JSON.stringify(chart.series_pie_format()) %> , null, 2)) + "</pre>");
+                    <% } %>
+                    $("#parameter").change();
+                    $("#shop option").remove();
+                    var shops_list = <%= JSON.stringify(_.union(settings.operator_shop_ref[0], settings.operator_shop_ref[1])) %>
+                    _.each(shops_list.sort(function(a, b) {
+                    return ( + a) - ( + b);
+                    }), function (shop) {
+                    $("#shop").append("\
+                        <option value='" + shop + "'>СП-" + shop + "</option>"
+                            );
+                    })
+                    $("#shop").val( - 1).change();
+        </script>
+    </div>
+</div>

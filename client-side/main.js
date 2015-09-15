@@ -1,5 +1,5 @@
 requirejs.config({
-    baseUrl: '/client-side/js/',
+    baseUrl: '/client-side/',
     paths: {
         jquery: 'vendors/jquery-2.1.4.min',
         underscore: 'vendors/underscore.min',
@@ -21,17 +21,17 @@ requirejs.config({
     }
 });
 require([
-    'underscore', 
+    'underscore',
     'jquery',
 ], function () {
     require([
-        'backbone', 
-        'datepicker', 
+        'backbone',
+        'datepicker',
         'jqflot',
         'APP',
     ], function () {
         require([
-         //   'backbonestorage',
+            //   'backbonestorage',
             'jqflotaddon',
             'jqflotpie',
             'classes/controller/router',
@@ -44,10 +44,12 @@ require([
                 'config',
             ], function () {
                 require([//we cant use this array because optimization module works only with hardcoded array constant. Proof http://requirejs.org/docs/optimization.html
-                 //   'text!templates/start.html',
-                 //   'text!templates/questions.html',
-                 //   'text!templates/editor.html',
-                 //   'text!templates/stats.html',
+                    'text!templates/start.html',
+                    'text!templates/questions.html',
+                    'text!templates/editor.html',
+                    'text!templates/stats.html',
+                    'text!templates/login.html',
+                    'text!templates/top_menu.html',
                 ], setup_app);
             });
         });

@@ -2,7 +2,6 @@ APP.router = Backbone.Router.extend({
     initialize: function (options) {
         $.extend(this, options);
     },
-
     routes: {
         "!questions/(:id/)": "show_questions",
         "!start/": "show_start",
@@ -10,7 +9,6 @@ APP.router = Backbone.Router.extend({
         "!stats/(:params/)": "show_stats",
         "!login": "show_login",
     },
-
     show_questions: function (id) {
         this.view_state.set({
             state: "questions",
@@ -19,32 +17,27 @@ APP.router = Backbone.Router.extend({
             }
         });
     },
-
     show_start: function () {
         this.view_state.set({
             state: "start"
         });
     },
-
     show_editor: function () {
         this.view_state.set({
             state: "editor"
         });
     },
-
     show_stats: function (params) {
         this.view_state.set({
             state: "stats",
             params: JSON.parse(params),
         });
     },
-    
     show_login: function (params) {
         this.view_state.set({
             state: "login",
         });
     },
-
     url_generators: {
         questions: function (vs) {
             var id = vs.get("params").q_id;
@@ -64,30 +57,27 @@ APP.router = Backbone.Router.extend({
             return "!login/"
         },
     },
-
     menu: {
-        "#!start/" : 'Опросить',
-        "#!editor/" : 'Добавить вопрос',
-        "#!stats/" : 'Статистика',
+        "#!start/": 'Опросить',
+        "#!editor/": 'Добавить вопрос',
+        "#!stats/": 'Статистика',
     },
-
-    generate_url: function() {
+    generate_url: function () {
         var vs = this.view_state;
         return this.url_generators[vs.get("state")](vs);
     },
-
-    current : function() {
+    current: function () {
         var Router = this,
                 fragment = Backbone.history.fragment,
                 routes = _.pairs(Router.routes),
                 route = null, params = null, matched;
 
-        matched = _.find(routes, function(handler) {
+        matched = _.find(routes, function (handler) {
             route = _.isRegExp(handler[0]) ? handler[0] : Router._routeToRegExp(handler[0]);
             return route.test(fragment);
         });
 
-        if(matched) {
+        if (matched) {
             // NEW: Extracts the params using the internal
             // function _extractParameters
             params = Router._extractParameters(route, fragment);
@@ -95,9 +85,9 @@ APP.router = Backbone.Router.extend({
         }
 
         return {
-            route : route,
-            fragment : fragment,
-            params : params
+            route: route,
+            fragment: fragment,
+            params: params
         };
     }
 })

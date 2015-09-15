@@ -1,0 +1,93 @@
+<form id="start_form">
+    <div class="row medium-uncollapse large-collapse panel callout">
+        <div class="row">
+            <div class="small-6 small-centered columns" id="msg_block">
+
+            </div>
+        </div>
+        <div class="row" style="display:none">
+            <div class="large-4 columns">
+                <label>Вы представляетесь
+                    <input id="user_name" type="text" placeholder="" value="<%=u.get('name')%>" />
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 small-centered columns">
+                <label>Тип интервью
+                    <select id="answers_type">
+                        <option value="0">Да/Нет</option>
+                        <option value="1">Баллы</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 small-centered columns">
+                <label>Дата обзвона
+                    <input id="calling_date" type="text" required/>
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 small-centered columns">
+                <label>Набор вопросов
+                    <select id="question_categories">
+                        <option value="0">Розница</option>
+                        <option value="0,1">Розница+Доставка</option>
+                        <option value="2">Интернет магазин</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 small-centered columns">
+                <label>Оператор
+                    <select id="operator_type">
+                        <option value="0">Оператор 1</option>
+                        <option value="1">Оператор 2</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+        <div class="row" id="shop_block">
+            <div class="small-6 small-centered columns">
+                <label>Магазин
+                    <select id="shop">
+                    </select>
+                </label>
+            </div>
+        </div> 
+        <div class="row">
+            <div class="small-6 small-centered columns">
+                <label>Берете интервью у клиента
+                    <input id="client_name" type="text" placeholder="Имя клиента" required />
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 small-centered columns">
+                <label>Телефон
+                    <input id="client_phone" type="text" placeholder="+7-9XX-XX-XX-XX" value="" required />
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 small-centered columns">
+                <label>№ реализации
+                    <input id="order_no" type="text" placeholder="" value="" required />
+                </label>
+            </div>
+        </div>
+        <div class="row" style="display:none">
+            <div class="small-6 small-centered columns">
+                <label>Товар
+                    <input id="product" type="text" placeholder="Стиральная машина" value="" />
+                </label>
+            </div>
+        </div>
+        <div class="small-12 small-centered columns text-center">
+            <a href="#!questions/" class="button radius nav start">Начать интервью</a>
+        </div>
+    </div>   
+</form>

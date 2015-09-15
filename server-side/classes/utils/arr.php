@@ -1,4 +1,5 @@
 <?php
+
 class arr {
 
     public static function extract($array, array $paths, $default = NULL) {
@@ -8,7 +9,7 @@ class arr {
         }
         return $found;
     }
-    
+
     public static function array_to_hash_id($array) {
         $r = [];
         foreach ($array as $i) {
@@ -24,4 +25,5 @@ class arr {
         }
         return true;
     }
+
 }

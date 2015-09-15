@@ -1,0 +1,47 @@
+<div class="row">
+    <div class="large-9 columns panel">
+        <div class="row">
+            <div class="large-7 large-offset-2 columns">    
+                <h5>Вопрос</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-6 large-centered columns">
+                <textarea id="question_text"></textarea>
+                <select id="question_category">
+                    <option value="0">Розница</option>
+                    <option value="1">Доставка</option>
+                    <option value="2">Интернет магазин</option>
+                </select>
+            </div>
+            <div class="large-7 large-offset-2 columns">    
+                <h5>Ответы</h5>
+            </div>
+            <div class="large-9 large-offset-3 columns" id="answers_list">
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-6 large-centered columns">
+
+                <input style="float:right" type="text" name="answers" id="answer_text" placeholder="вариант ответа">
+                <a href="#" class="button secondary tiny" id="answer_add">Добавить ответ</a>
+            </div>
+            <div class="small-12 small-centered columns text-center">
+                <a href="/#!editor/" class="button radius nav start" id="question_add">Добавить вопрос</a>
+            </div>
+        </div>
+    </div>
+    <div class="large-3 columns">
+        <%questions.each(function (q) {%>
+        <div class="panel callout radius">
+            <%=q.get("content")%>
+            <ul>
+                <%_.each(q.get("answers"), function (a) {%>
+                <li><%=a.get("content")%></li>
+                <%})%>
+            </ul>
+        </div>
+        <%})%>
+    </div>
+</div>
