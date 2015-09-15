@@ -33,4 +33,4 @@ if (isset($_GET['controller']) && isset($_GET['action'])) {
         echo var_dump($e);
     }
 } else
-    header('Location: /interview.html#!login/');
+    header('Location: /interview.html#!start/');

@@ -148,9 +148,10 @@ APP.view = Backbone.View.extend({
             ).done(function (id) {
                 var id = JSON.parse(id) * 1;
                 searchIDs.push(id);
+                self.answers_list.add({id: id, content: other_answer})
                 self.question_list.get(q).add_answer(
-                        self.answers_list.add({id: id, content: other_answer}).last()
-                        );
+                    self.answers_list.last()
+                );
                 d.resolve();
             });
         else {
@@ -214,11 +215,17 @@ APP.view = Backbone.View.extend({
     events: {
         //questions
         'click .nav': function () {
-            //this.interview.save_local();
+            $(".next").hide();
         },
         'click .next': function () {
             this.save_interview_state();
         },
+        'change #other_answer': function () {
+            $(".next").show();
+        },
+        'change .answers_checkbox': function () {
+            $(".next").show();
+        }, 
         'click #yes': function (event) {
             event.preventDefault();
             $("#answers_1").hide();
@@ -318,6 +325,8 @@ APP.view = Backbone.View.extend({
                 this.show_default_answers();
             else
                 this.hide_default_answers();
+            
+            $(".next").show();
         },
         //stats
         'click #add_series': function () {

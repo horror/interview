@@ -54,7 +54,7 @@
         <div class="row" id="answers_2" style="display:none">
             <%_.each(q.get("answers"), function (a) {%>
             <div class="large-9 large-offset-3 columns">
-                <input type="checkbox" id="<%=a.id%>" name="answers" value="<%=a.id%>"><label for="<%=a.id%>"><%=a.get("content")%></label>
+                <input type="checkbox" id="<%=a.id%>" name="answers" class="answers_checkbox" value="<%=a.id%>"><label for="<%=a.id%>"><%=a.get("content")%></label>
             </div>
             <%})%>
             <div class="large-9 large-offset-3 columns">
@@ -106,7 +106,7 @@
         </div>
         <div class="small-6 columns text-center">
             <% if ((another_q = questions.get(p.q_id).get_relative(1)) != undefined) {%>
-            <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav next">Следующий</a>
+            <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav next" <%=(interview_hash[q.id] != undefined) ? '' : 'style="display:none"'%>>Следующий</a>
             <% } else { %>
             <a href="#!start/" class="button success radius centered nav last">Прощаться</a>
             <% } %>
