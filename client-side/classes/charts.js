@@ -178,13 +178,40 @@ APP.charts = {
         min: _.min,
         max: _.max,
     },
-    gen_submittions_per_problem_params: function () {
-        var params = [];
-        var contest = this.get_contest();
-        _.each(contest.problems, function (id) {
-            params.push({"period": 10, "parameter": "run_cnt", "aggregation": "sum", "group_by": "status", "problems": [id], "user": ".*?", "affiliation": ".*?"});
-        });
-        return {"chart": {params: params, chart_type: 'pie'}};
+    
+    workpieces: {
+        telephoned_success: function () {
+            var p = {
+                chart_type:"line",
+                params:[
+                    {
+                        parameter:"call_cnt",
+                        aggregation:"sum",
+                        group_by:"q_categories",
+                        q_categories:["0","1","2"],
+                        q_types:["0","1"],
+                        user:"",
+                        shop:null
+                    },
+                    {
+                        parameter:"call_cnt",
+                        aggregation:"sum",
+                        group_by:"q_categories",
+                        q_categories:["0","1","2"],
+                        q_types:["0","1"],
+                        color:"red",
+                        user:"",
+                        shop:null,
+                        aborted:"1"
+                    }
+                ]
+            };
+            return p;
+        },
+    },
+    
+    workpieces_labels: {
+        telephoned_success: 'Успешность обзвонов',
     }
 }
 

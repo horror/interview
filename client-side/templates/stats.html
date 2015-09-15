@@ -94,73 +94,84 @@
         <%
         };
         %>
-        <script>
-            $("#parameter").change(function () {
-            $(".parameter_params").css("display", "none");
-                    $("#" + $("#parameter").val() + "_params").css("display", "block");
+    </div>
+    <div class="large-6 columns">
+        <h2>Заготовки:</h2>
+        <%
+            _.each(chart.workpieces, function (get_params, name) {
+        %>
+        <a href='#!stats/<%=JSON.stringify(get_params())%>/'><%=chart.workpieces_labels[name]%></a>
+        <%
             });
-                    $("#chart_type").val("<%=chart.chart_type%>");
-                    <% if (chart.chart_type === "line") { %>
-                    $.plot("#plot", <%= JSON.stringify(chart.series) %> , {
-                    series: {
-                    bars: {
-                    show: true,
-                            lineWidth: 0, // in pixels
-                            barWidth: 0.9, // in units of the x axis
-                            align: "center", // "left", "right", or "center"
-                            horizontal: false,
-                            zero: true,
-                    }
-                    },
-                            xaxes: [
-                            { position: 'bottom', ticks: [
-                                    <%
-                                    var idx = 0;
-                                    _.each(chart.q_categories, function (cat) {
-                                    %>
-                                            [ <%=idx++%> , "<%=cat%>"],
-                                            <%
-                                    });
-                                    %>
-                            ], axisLabel: 'Категории вопросов' }
-                            ],
-                            yaxes: [
-                            { position: 'left', axisLabel: 'Количество звонков' },
-                            ],
-                            legend: {
-                            labelFormatter: function(label, series) {
-                            return ' <a class="delete_series" data-series="' + series.id + '" href="#" onClick="return false;"> Удалить</a>';
-                            }
-                            }
-                    });
-                    <% }
-            else if (chart.chart_type === "pie") { %>
-                    var series = <%= JSON.stringify(chart.series_pie_format()) %> ;
-                    for (var i = 0; i < series.length; ++i) {
-            $.plot("#plot_" + i, series[i], {
-            series: {
-            pie: {show: true}
-            },
-                    legend: {
-                    show: false
-                    }
-            });
-            }
-            <% }
-            else { %>
-                    $("#plot").html("<pre id='json'>" + APP.utils.syntaxHighlight(JSON.stringify( <%= JSON.stringify(chart.series_pie_format()) %> , null, 2)) + "</pre>");
-                    <% } %>
-                    $("#parameter").change();
-                    $("#shop option").remove();
-                    var shops_list = <%= JSON.stringify(_.union(settings.operator_shop_ref[0], settings.operator_shop_ref[1])) %>
-                    _.each(shops_list.sort(function(a, b) {
-                    return ( + a) - ( + b);
-                    }), function (shop) {
-                    $("#shop").append("\
-                        <option value='" + shop + "'>СП-" + shop + "</option>"
-                            );
-                    })
-                    $("#shop").val( - 1).change();
-        </script>
+        %>
     </div>
 </div>
+
+<script>
+    $("#parameter").change(function () {
+    $(".parameter_params").css("display", "none");
+            $("#" + $("#parameter").val() + "_params").css("display", "block");
+    });
+            $("#chart_type").val("<%=chart.chart_type%>");
+            <% if (chart.chart_type === "line") { %>
+            $.plot("#plot", <%= JSON.stringify(chart.series) %> , {
+            series: {
+            bars: {
+            show: true,
+                    lineWidth: 0, // in pixels
+                    barWidth: 0.9, // in units of the x axis
+                    align: "center", // "left", "right", or "center"
+                    horizontal: false,
+                    zero: true,
+            }
+            },
+                    xaxes: [
+                    { position: 'bottom', ticks: [
+                            <%
+                            var idx = 0;
+                            _.each(chart.q_categories, function (cat) {
+                            %>
+                                    [ <%=idx++%> , "<%=cat%>"],
+                                    <%
+                            });
+                            %>
+                    ], axisLabel: 'Категории вопросов' }
+                    ],
+                    yaxes: [
+                    { position: 'left', axisLabel: 'Количество звонков' },
+                    ],
+                    legend: {
+                    labelFormatter: function(label, series) {
+                    return ' <a class="delete_series" data-series="' + series.id + '" href="#" onClick="return false;"> Удалить</a>';
+                    }
+                    }
+            });
+            <% }
+    else if (chart.chart_type === "pie") { %>
+            var series = <%= JSON.stringify(chart.series_pie_format()) %> ;
+            for (var i = 0; i < series.length; ++i) {
+                $.plot("#plot_" + i, series[i], {
+                series: {
+                pie: {show: true}
+                },
+                        legend: {
+                        show: false
+                        }
+                });
+            }
+    <% }
+    else { %>
+            $("#plot").html("<pre id='json'>" + APP.utils.syntaxHighlight(JSON.stringify( <%=JSON.stringify(chart.series_pie_format()) %> , null, 2)) + "</pre>");
+            <% } %>
+            $("#parameter").change();
+            $("#shop option").remove();
+            var shops_list = <%= JSON.stringify(_.union(settings.operator_shop_ref[0], settings.operator_shop_ref[1])) %>
+            _.each(shops_list.sort(function(a, b) {
+            return ( + a) - ( + b);
+            }), function (shop) {
+            $("#shop").append("\
+                <option value='" + shop + "'>СП-" + shop + "</option>"
+                    );
+            })
+            $("#shop").val(-1).change();
+</script>
