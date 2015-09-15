@@ -6,7 +6,9 @@
 
     <section class="top-bar-section">
         <ul class="right">
+            <%if (interview_cnt != undefined) {%>
             <li><span class="<%=interview_cnt > 0 ? 'success' : ''%> label">Количество опросов за сегодня: <%=interview_cnt%></span></a>
+            <%}%>
             <li><a href="/?controller=users&action=logout">Выход</a>
         </ul>
 
