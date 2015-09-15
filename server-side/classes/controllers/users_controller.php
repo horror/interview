@@ -10,14 +10,17 @@ class users_controller extends controller {
 
         if (arr::is_all_values_not_null($params)) {
             $count = db::exec_count($this->db, "SELECT COUNT(*) FROM i_users WHERE name = :name", [':name' => $params['name']]);
-            if ($count > 0)
+            if ($count > 0) {
                 $params['msg'] = "Такое имя уже существует";
+                header('Location: /interview.html#!registr/');
+            }
             else {
                 db::exec($this->db, "INSERT INTO i_users (name, password) VALUES(:name, :password)", [
                     ':name' => $params['name'],
                     ':password' => md5($params['password'] . $this->salt)
                 ]);
                 $params['msg'] = "Успешно";
+                header('Location: /interview.html#!login/');
             }
         }
 

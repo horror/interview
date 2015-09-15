@@ -7,7 +7,8 @@ APP.router = Backbone.Router.extend({
         "!start/": "show_start",
         "!editor/": "show_editor",
         "!stats/(:params/)": "show_stats",
-        "!login": "show_login",
+        "!login/": "show_login",
+        "!registr/": "show_registr",
     },
     show_questions: function (id) {
         this.view_state.set({
@@ -38,6 +39,11 @@ APP.router = Backbone.Router.extend({
             state: "login",
         });
     },
+    show_registr: function (params) {
+        this.view_state.set({
+            state: "registr",
+        });
+    },
     url_generators: {
         questions: function (vs) {
             var id = vs.get("params").q_id;
@@ -55,6 +61,9 @@ APP.router = Backbone.Router.extend({
         },
         login: function () {
             return "!login/"
+        },
+        registr: function () {
+            return "!registr/"
         },
     },
     menu: {

@@ -49,6 +49,7 @@ require([
                     'text!templates/editor.html',
                     'text!templates/stats.html',
                     'text!templates/login.html',
+                    'text!templates/registr.html',
                     'text!templates/top_menu.html',
                 ], setup_app);
             });
