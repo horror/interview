@@ -1,5 +1,10 @@
-.answer_item {
+.answer_item, details {
     cursor: pointer;
+}
+
+details {
+    padding: 0;
+    margin: 0;
 }
 
 input[type="text"]{

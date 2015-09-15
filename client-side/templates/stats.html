@@ -1,7 +1,10 @@
 <div class="row">
+    
     <div class="large-6 columns">
-        <h2>Добавить новый график:</h2>
-        <div class="box">
+        
+        <div class="large-11 columns">
+        <details class="row"><summary><strong>Инструменты</strong></summary>
+            <h2>Добавить новый график:</h2>
             <div>
                 <label>Ось У</label>
                 <select id="parameter">
@@ -54,10 +57,10 @@
                     <input class="selector" name="aborted" value="1" type="checkbox"/><strong>Отказ</strong>
                 </div>
                 <div class='row'>
-                    <div class="large-6 columns">
+                    <div class="large-5 columns">
                     <label>Интервал с-<input type="text" size="20" placeholder="дата" class="date" id="since_date"></label>
                     </div>
-                    <div class="large-6 columns">
+                    <div class="large-5 columns">
                     <label>-по-<input type="text" size="20" placeholder="дата" class="date" id="before_date"></label>
                     </div>
                 </div>
@@ -83,6 +86,7 @@
                 %>
             </div>
             <div><button id="add_series">Добавить</button></div>
+        </details>    
         </div>
         <div>
             <h2>Тип графика:</h2>
