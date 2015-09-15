@@ -1,4 +1,4 @@
-var UTILS = {
+APP.utils = {
     get_current_date: function () {
         var today = new Date();
         var dd = today.getDate();

@@ -1,11 +1,11 @@
 <?php
 class usr {
     public static function id() {
-        return json_decode($_SESSION['loggined'], true)['id'];
+        return isset($_SESSION['loggined']) ? json_decode($_SESSION['loggined'], true)['id'] : exit(1);
     }
     
     public static function name() {
-        return json_decode($_SESSION['loggined'], true)['name'];
+        return isset($_SESSION['loggined']) ? json_decode($_SESSION['loggined'], true)['name'] : exit(1);
     }
     
     public static function init($params) {

@@ -21,7 +21,7 @@ class users_controller extends controller
             }
         }
 
-        $this->view->render('registration', $params, true);
+        $this->view->render('json', $params);
     }
 
     public function login_action($params)
@@ -37,11 +37,11 @@ class users_controller extends controller
             $params['msg'] = $row ? "complete" : "incorrect";
             if ($params['msg'] == "complete") {
                 usr::init([id => $row["id"], name => $params['name']]);
-                header('Location: /interview.html');
+                header('Location: /interview.html#!start/');
             }
         }
 
-        $this->view->render('login', $params, true);
+        $this->view->render('json', $params);
     }
     
     public function logout_action()

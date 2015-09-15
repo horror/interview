@@ -1,4 +1,4 @@
-var CHARTS =  {
+APP.charts =  {
     init: function (data) {
         this.series = [];
         this.series_params = [];
