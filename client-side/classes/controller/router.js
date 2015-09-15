@@ -70,6 +70,7 @@ APP.router = Backbone.Router.extend({
         "#!kabinet/": {title: 'Кабинет', role: 0},
         "#!start/": {title: 'Опросить', role: 0},
         "#!editor/": {title: 'Добавить вопрос', role: 1},
+        "#!registr/": {title: 'Добавить пользователя', role: 1},
         "#!stats/": {title: 'Статистика', role: 1},
     },
     generate_url: function () {

@@ -5,22 +5,22 @@ class users_controller extends controller {
     private $salt = "dffsfsrare2135";
 
     public function registration_action($params) {
-        $params = arr::extract($params, ['name', 'password']);
+        $params = arr::extract($params, ['name', 'password', 'role']);
         $params['msg'] = "Зарегистрируйтесь";
 
         if (arr::is_all_values_not_null($params)) {
             $count = db::exec_count($this->db, "SELECT COUNT(*) FROM i_users WHERE name = :name", [':name' => $params['name']]);
             if ($count > 0) {
-                $params['msg'] = "Такое имя уже существует";
-                header('Location: /interview.html#!registr/');
+                $params['msg'] = "this name allready used";
             }
             else {
-                db::exec($this->db, "INSERT INTO i_users (name, password) VALUES(:name, :password)", [
+                db::exec($this->db, "INSERT INTO i_users (name, password, role) VALUES(:name, :password, :role)", [
                     ':name' => $params['name'],
-                    ':password' => md5($params['password'] . $this->salt)
+                    ':password' => md5($params['password'] . $this->salt),
+                    ':role' => $params['role']
                 ]);
                 $params['msg'] = "Успешно";
-                header('Location: /interview.html#!login/');
+                header('Location: /interview.html#!registr/');
             }
         }
 
@@ -59,4 +59,9 @@ class users_controller extends controller {
         $this->view->render('json', $result);
     }
 
+    public function get_users_list_action($params) {
+        $result = db::exec($this->db, "SELECT id, name, role FROM i_users", null);
+
+        $this->view->render('json', $result);
+    }
 }

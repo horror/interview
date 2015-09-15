@@ -1,12 +1,36 @@
-<div class="row medium-uncollapse large-collapse">
-    <div class="row">
-        <div class="small-6 small-centered columns">
-            <span>Зарегистрируйтесь</span> 
-            <form action="/?controller=users&action=registration" method="POST">
+<div class="row">
+    <form action="/?controller=users&action=registration" method="POST">
+    <div class="large-9 columns panel">
+        <div class="row">
+            <div class="large-7 large-offset-2 columns">    
+                <h5>Добавление пользователя</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="large-6 large-centered columns">
                 <input  type="text" name="name" placeholder="Имя">
                 <input  type="password" name="password" placeholder="Пароль">
-                <input  type="submit" name="submit" class="button radius" value="Зарегистрироваться">
-            </form>
+                <select id="question_category" name="role">
+                    <option value="0">Оператор</option>
+                    <option value="1">Админ</option>
+                </select>
+            </div>
         </div>
+        <div class="row">
+            <div class="small-12 small-centered columns text-center">
+                <input  type="submit" name="submit" class="button radius" value="Зарегистрироваться">
+            </div>
+        </div>
+    </div>
+    </form>
+    <div class="large-3 columns">
+        <%_.each(users, function (u) {%>
+        <div class="panel callout radius">
+            <%=u.name%>
+            <ul>
+                <li>Роль: <%=u.role == 1 ? "Админ" : "Оператор"%></li>
+            </ul>
+        </div>
+        <%})%>
     </div>
 </div>

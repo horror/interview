@@ -391,7 +391,7 @@ APP.view = Backbone.View.extend({
 
         var self = this;
         var d = $.Deferred();
-        if (self.user.get("name") === null && self.view_state.get("state") !== "login" && self.view_state.get("state") !== "registr")
+        if (self.user.get("name") === null && self.view_state.get("state") !== "login")
             self.user.fetch({
                 dataType: "json",
                 success: function (data) {
@@ -460,6 +460,13 @@ APP.view = Backbone.View.extend({
                     self.render({msg: "Пожалуйста, авторизируйтесь!"});
 
                     break;
+                    
+                case "registr":
+                    $.post("/?controller=users&action=get_users_list").done(function (users) {
+                        self.render({users: JSON.parse(users)});
+                    });
+                    
+                    break;
 
                 default:
                     self.render({});
@@ -475,7 +482,7 @@ APP.view = Backbone.View.extend({
         
     render: function (params) {
         $(this.el).html(
-                (this.view_state.get('state') !== "login" && this.view_state.get('state') !== "registr" ?
+                (this.view_state.get('state') !== "login" ?
                         this.template('top_menu')({menu: this.router.menu, interview_cnt: this.interview.count, u: this.user}) :
                         ""
                         ) +
