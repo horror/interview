@@ -180,6 +180,7 @@ CREATE TABLE IF NOT EXISTS `i_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `password` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `role` int(2) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
 

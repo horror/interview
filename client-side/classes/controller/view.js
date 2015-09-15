@@ -391,7 +391,7 @@ APP.view = Backbone.View.extend({
 
         var self = this;
         var d = $.Deferred();
-        if (self.user.get("name") === null && this.view_state.get("state") !== "login" && this.view_state.get("state") !== "registr")
+        if (self.user.get("name") === null && self.view_state.get("state") !== "login" && self.view_state.get("state") !== "registr")
             self.user.fetch({
                 dataType: "json",
                 success: function (data) {
@@ -476,7 +476,7 @@ APP.view = Backbone.View.extend({
     render: function (params) {
         $(this.el).html(
                 (this.view_state.get('state') !== "login" && this.view_state.get('state') !== "registr" ?
-                        this.template('top_menu')({menu: this.router.menu, interview_cnt: this.interview.count}) :
+                        this.template('top_menu')({menu: this.router.menu, interview_cnt: this.interview.count, u: this.user}) :
                         ""
                         ) +
                 this.template()(

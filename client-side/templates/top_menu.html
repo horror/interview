@@ -14,8 +14,10 @@
 
         <!-- Left Nav Section -->
         <ul class="left">
-            <%_.each(menu, function (title, href) {%>
-            <li><a href="<%=href%>"><%=title%></a></li>
+            <%_.each(menu, function (item, href) {
+                if (item.role > u.get('role')*1) return;
+            %>
+                <li><a href="<%=href%>"><%=item.title%></a></li>
             <%})%>
         </ul>
     </section>

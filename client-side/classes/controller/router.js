@@ -67,9 +67,10 @@ APP.router = Backbone.Router.extend({
         },
     },
     menu: {
-        "#!start/": 'Опросить',
-        "#!editor/": 'Добавить вопрос',
-        "#!stats/": 'Статистика',
+        "#!kabinet/": {title: 'Кабинет', role: 0},
+        "#!start/": {title: 'Опросить', role: 0},
+        "#!editor/": {title: 'Добавить вопрос', role: 1},
+        "#!stats/": {title: 'Статистика', role: 1},
     },
     generate_url: function () {
         var vs = this.view_state;

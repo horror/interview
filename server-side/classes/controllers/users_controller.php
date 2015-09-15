@@ -52,8 +52,8 @@ class users_controller extends controller {
     }
 
     public function get_current_action($params) {
-        $result = db::exec_row($this->db, "SELECT id, name FROM i_users WHERE name = :name", [
-                    ':name' => usr::name()
+        $result = db::exec_row($this->db, "SELECT id, name, role FROM i_users WHERE name = :name", [
+            ':name' => usr::name()
         ]);
 
         $this->view->render('json', $result);
