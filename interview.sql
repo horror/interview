@@ -189,12 +189,7 @@ CREATE TABLE IF NOT EXISTS `i_users` (
 --
 
 INSERT INTO `i_users` (`id`, `name`, `password`) VALUES
-(1, 'sdfsdfsdf', 'a324b7bc9b0c59ba276bf2eedf8f079f'),
-(2, '123', 'ce15d3ba2ad41976afbe0ab8931f5b24'),
-(3, 'test1', '12bfbb50dd44b6e05a400e09363e66d7'),
-(4, '111', '8053310558ba10554be0646617b3227a'),
-(5, 'test2', 'db0c126ba691af3d8d680a4ccb55c86c'),
-(6, 'root', '8591b98d33eff668603ce16484bfba91');
+(1, '123', 'ce15d3ba2ad41976afbe0ab8931f5b24');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
