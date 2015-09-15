@@ -26,7 +26,7 @@ APP.utils = {
             }
             return '<span class="' + cls + '">' + match + '</span>';
         });
-    }
+    },
 }
 
 

@@ -152,7 +152,9 @@ APP.charts = {
                             q_types[i.answers_type] &&
                             (params.shop === null || i.shop === params.shop) &&
                             (new RegExp(params.user)).test(self.users[i.user_id].name) &&
-                            (!params.aborted || i.ans_cnt < self.questions_category_sum[i.question_category]);
+                            (!params.aborted || i.ans_cnt < self.questions_category_sum[i.question_category]) &&
+                            (!params.since_date || new Date(params.since_date) <= new Date(i.date_only))  &&
+                            (!params.before_date || new Date(params.before_date) >= new Date(i.date_only));
                     return f;
                 }).
                 groupBy(self.group_by[params.group_by]);
@@ -208,10 +210,43 @@ APP.charts = {
             };
             return p;
         },
+        I_telephoned_success_today: function () {
+            var p = {
+                chart_type:"line",
+                params:[
+                    {
+                        parameter:"call_cnt",
+                        aggregation:"sum",
+                        group_by:"q_categories",
+                        q_categories:["0","1","2"],
+                        q_types:["0","1"],
+                        user:APP.charts.current_user.get("name"),
+                        shop:null,
+                        since_date:APP.utils.get_current_date(),
+                        before_date:APP.utils.get_current_date(),
+                    },
+                    {
+                        parameter:"call_cnt",
+                        aggregation:"sum",
+                        group_by:"q_categories",
+                        q_categories:["0","1","2"],
+                        q_types:["0","1"],
+                        color:"red",
+                        user:APP.charts.current_user.get("name"),
+                        shop:null,
+                        aborted:"1",
+                        since_date:APP.utils.get_current_date(),
+                        before_date:APP.utils.get_current_date(),
+                    }
+                ]
+            };
+            return p;
+        },
     },
     
     workpieces_labels: {
         telephoned_success: 'Успешность обзвонов',
+        I_telephoned_success_today: 'Мои обзвоны за сегодня',
     }
 }
 

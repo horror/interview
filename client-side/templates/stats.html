@@ -14,7 +14,7 @@
                     <%
                         _.each(chart.group_by_labels, function (label, name) {
                     %>
-                    <option value="<%=name%>"><%=label%></option>
+                        <option value="<%=name%>"><%=label%></option>
                     <%
                         });
                     %>
@@ -53,8 +53,16 @@
                 <div>
                     <input class="selector" name="aborted" value="1" type="checkbox"/><strong>Отказ</strong>
                 </div>
+                <div class='row'>
+                    <div class="large-6 columns">
+                    <label>Интервал с-<input type="text" size="20" placeholder="дата" class="date" id="since_date"></label>
+                    </div>
+                    <div class="large-6 columns">
+                    <label>-по-<input type="text" size="20" placeholder="дата" class="date" id="before_date"></label>
+                    </div>
+                </div>
                 <div>
-                    <label>Оператор <input type="text" size="20" id="user" placeholder=".*?" value="<%//u.get('name')%>"></label>
+                    <label>Оператор <input type="text" size="20" id="user" placeholder=".*?"></label>
                 </div>
                 <div>
                     <label>Магазин
@@ -89,8 +97,7 @@
         <%}
         else for (var i = 0; i < chart.series.length; ++i) {
         %>
-
-        <div class="pie large-6 columns"><div class="plot" id="plot_<%=i%>"></div></div>
+            <div class="pie large-6 columns"><div class="plot" id="plot_<%=i%>"></div></div>
         <%
         };
         %>
@@ -100,7 +107,7 @@
         <%
             _.each(chart.workpieces, function (get_params, name) {
         %>
-        <a href='#!stats/<%=JSON.stringify(get_params())%>/'><%=chart.workpieces_labels[name]%></a>
+        <a href='#!stats/<%=JSON.stringify(get_params())%>/'><%=chart.workpieces_labels[name]%></a><br />
         <%
             });
         %>
@@ -162,16 +169,20 @@
     <% }
     else { %>
             $("#plot").html("<pre id='json'>" + APP.utils.syntaxHighlight(JSON.stringify( <%=JSON.stringify(chart.series_pie_format()) %> , null, 2)) + "</pre>");
-            <% } %>
-            $("#parameter").change();
-            $("#shop option").remove();
-            var shops_list = <%= JSON.stringify(_.union(settings.operator_shop_ref[0], settings.operator_shop_ref[1])) %>
-            _.each(shops_list.sort(function(a, b) {
-            return ( + a) - ( + b);
-            }), function (shop) {
-            $("#shop").append("\
-                <option value='" + shop + "'>СП-" + shop + "</option>"
-                    );
-            })
-            $("#shop").val(-1).change();
+    <% } %>
+
+    $("#parameter").change();
+    $("#shop option").remove();
+    var shops_list = <%= JSON.stringify(_.union(settings.operator_shop_ref[0], settings.operator_shop_ref[1])) %>
+    _.each(shops_list.sort(function(a, b) {
+    return ( + a) - ( + b);
+    }), function (shop) {
+    $("#shop").append("\
+        <option value='" + shop + "'>СП-" + shop + "</option>"
+            );
+    })
+    $("#shop").val(-1).change();
+    $('.date').fdatepicker({
+        format: 'yyyy-mm-dd'
+    });
 </script>

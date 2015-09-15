@@ -9,6 +9,7 @@ APP.router = Backbone.Router.extend({
         "!stats/(:params/)": "show_stats",
         "!login/": "show_login",
         "!registr/": "show_registr",
+        "!kabinet/": "show_kabinet",
     },
     show_questions: function (id) {
         this.view_state.set({
@@ -44,6 +45,11 @@ APP.router = Backbone.Router.extend({
             state: "registr",
         });
     },
+    show_kabinet: function (params) {
+        this.view_state.set({
+            state: "kabinet",
+        });
+    },
     url_generators: {
         questions: function (vs) {
             var id = vs.get("params").q_id;
@@ -65,13 +71,16 @@ APP.router = Backbone.Router.extend({
         registr: function () {
             return "!registr/"
         },
+        kabinet: function () {
+            return "!kabinet/"
+        },
     },
     menu: {
         "#!kabinet/": {title: 'Кабинет', role: 0},
         "#!start/": {title: 'Опросить', role: 0},
         "#!editor/": {title: 'Добавить вопрос', role: 1},
         "#!registr/": {title: 'Добавить пользователя', role: 1},
-        "#!stats/": {title: 'Статистика', role: 1},
+        "#!stats/": {title: 'Статистика', role: 0},
     },
     generate_url: function () {
         var vs = this.view_state;

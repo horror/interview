@@ -335,6 +335,8 @@ APP.view = Backbone.View.extend({
             series_params.user = $("#user").val();
             series_params.shop = $("#shop").val();
             series_params.aborted = $("input[name='aborted']:checked").val();
+            series_params.since_date = $("#since_date").val();
+            series_params.before_date = $("#before_date").val();
             APP.charts.add_new_series(series_params);
             this.update_url_params(APP.charts.settings());
             this.render({chart: APP.charts});
@@ -450,6 +452,7 @@ APP.view = Backbone.View.extend({
                             "/?controller=stats&action=get_interviews_list"
                             ).done(function (interviews_list) {
                         APP.charts.init(JSON.parse(interviews_list));
+                        APP.charts.current_user = self.user;
                         APP.charts.settings(self.view_state.get('params'));
                         self.render({chart: APP.charts});
                     });

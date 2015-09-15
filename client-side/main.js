@@ -51,6 +51,7 @@ require([
                     'text!templates/login.html',
                     'text!templates/registr.html',
                     'text!templates/top_menu.html',
+                    'text!templates/kabinet.html',
                 ], setup_app);
             });
         });
