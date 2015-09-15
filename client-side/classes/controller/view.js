@@ -148,7 +148,7 @@ APP.view = Backbone.View.extend({
             ).done(function (id) {
                 var id = JSON.parse(id) * 1;
                 searchIDs.push(id);
-                self.answers_list.add({id: id, content: other_answer})
+                self.answers_list.add({id: id, content: other_answer});
                 self.question_list.get(q).add_answer(
                     self.answers_list.last()
                 );
