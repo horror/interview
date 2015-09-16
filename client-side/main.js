@@ -1,4 +1,5 @@
 requirejs.config({
+    urlArgs: "bust=" + (new Date()).getTime(),
     baseUrl: '/client-side/',
     paths: {
         jquery: 'vendors/jquery-2.1.4.min',

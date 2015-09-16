@@ -261,6 +261,17 @@ APP.view = Backbone.View.extend({
             $(".prev").remove();
             $("#menu").remove();
         },
+        'change .score': function (event) {
+            if ($(event.currentTarget).val() <= this.settings.bad_scores_before)
+                this.show_default_answers();
+            else
+                this.hide_default_answers();
+            
+            $(".next").show();
+        },
+        'click .disable': function (event) {
+            event.preventDefault();
+        },
         //start
         'click .start': function (event) {
             event.preventDefault();
@@ -320,14 +331,6 @@ APP.view = Backbone.View.extend({
             var c = $("#question_category").val();
             $.post("/?controller=interview&action=add_question", {content: q_text, category: c, a: answs});
         },
-        'change .score': function (event) {
-            if ($(event.currentTarget).val() <= this.settings.bad_scores_before)
-                this.show_default_answers();
-            else
-                this.hide_default_answers();
-            
-            $(".next").show();
-        },
         //stats
         'click #add_series': function () {
             var series_params = {};
@@ -359,7 +362,7 @@ APP.view = Backbone.View.extend({
             APP.charts.delete_series($(event.currentTarget).data('series'));
             this.update_url_params(APP.charts.settings());
             this.render({chart: APP.charts});
-        }
+        },
     },
     update_qestions: function () {
         var self = this;
