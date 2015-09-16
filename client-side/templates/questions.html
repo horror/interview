@@ -14,7 +14,7 @@
             var prev_q = questions.get(q.id).get_relative(-1);
             var prev_last_answered = prev_q != undefined && interview_hash[prev_q.id] != undefined;
             %>
-                <a id="q_id_<%=q.id%>" href="#!questions/<%=q.id%>/" class="tiny button 
+                <a href="#!questions/<%=q.id%>/" class="tiny button 
                    <%=interview_hash[q.id] !== undefined ? (interview_hash[q.id].answer[0] == 1 ? 'success' : 'alert' ) : (p.q_id*1 < q.id*1 && !prev_last_answered ? 'secondary disable' : '')%>"
                 ><%=++idx%></a>
             <%})%> 
