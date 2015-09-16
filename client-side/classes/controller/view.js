@@ -152,6 +152,7 @@ APP.view = Backbone.View.extend({
                 self.question_list.get(q).add_answer(
                     self.answers_list.last()
                 );
+                $("#q_id_" + q).addClass("alert");
                 d.resolve();
             });
         else {
