@@ -16,7 +16,8 @@ APP.view = Backbone.View.extend({
                 answers: []
             },
             get_relative: function (direction) {
-                return this.collection.at(this.collection.indexOf(this) + direction);
+                var pos = this.collection.indexOf(this) + direction;
+                return (pos >= 0) ? this.collection.at(pos) : undefined;
             },
             get_category_name: function () {
                 return categories[this.get('category')];

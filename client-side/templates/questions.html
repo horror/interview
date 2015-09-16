@@ -114,7 +114,8 @@
     <%var another_q;%>
     <div class="row">
         <div class="small-6 columns text-center">
-            <% if ((another_q = questions.get(p.q_id).get_relative(-1)) != undefined) {%>
+            <%
+            if ((another_q = questions.get(p.q_id).get_relative(-1)) != undefined) {%>
             <a href="#!questions/<%=another_q.id%>/" class="button radius centered nav prev">Предыдущий</a>
             <% } %>
         </div>
