@@ -152,7 +152,7 @@ APP.view = Backbone.View.extend({
                 self.question_list.get(q).add_answer(
                     self.answers_list.last()
                 );
-                $("#q_id_" + id).addClass("alert");
+                $("#q_id_" + q).addClass("alert");
                 d.resolve();
             });
         else {
@@ -331,18 +331,6 @@ APP.view = Backbone.View.extend({
             }).get();
             var c = $("#question_category").val();
             $.post("/?controller=interview&action=add_question", {content: q_text, category: c, a: answs});
-        },
-        'mousedown .dropable': function (event) {
-            $(event.currentTarget).detectDrag();
-        },
-        'dragstart .dropable': function (event, data, clone, element) {
-            
-        },
-        'dragend .dropable': function (event, clone, element) {
-            
-        },
-        'drop .dropable': function (event, data, clone, element) {
-            
         },
         //stats
         'click #add_series': function () {
