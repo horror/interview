@@ -3,6 +3,7 @@ requirejs.config({
     baseUrl: '/client-side/',
     paths: {
         jquery: 'vendors/jquery-2.1.4.min',
+        jqueryui: 'vendors/jquery-ui.min',
         underscore: 'vendors/underscore.min',
         backbone: 'vendors/backbone.min',
         datepicker: 'vendors/foundation-datepicker.min',
@@ -26,6 +27,7 @@ require([
     'jquery',
 ], function () {
     require([
+        'jqueryui',
         'backbone',
         'datepicker',
         'jqflot',

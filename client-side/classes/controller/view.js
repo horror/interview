@@ -332,6 +332,31 @@ APP.view = Backbone.View.extend({
             var c = $("#question_category").val();
             $.post("/?controller=interview&action=add_question", {content: q_text, category: c, a: answs});
         },
+        'questions_update_sort': function(event, id, position) {    
+            var model = this.question_list.get(id);
+            this.question_list.remove(model);
+
+            this.question_list.each(function (model, index) {
+                var ordinal = index;
+                if (index >= position) {
+                    ordinal += 1;
+                }
+                model.set('ordinal', ordinal);
+            });            
+
+            model.set('ordinal', position);
+            this.question_list.add(model, {at: position});
+
+            // to update ordinals on server:
+            var ids = this.question_list.pluck('id');
+            $.post("/?controller=interview&action=reorder_questions", {order: ids});
+            console.log('post ids to server: ' + ids.join(', '));
+        },
+        'drop': function (event, index) {
+            event.preventDefault();
+            if ($(event.target).hasClass("question"))
+                $(this.el).trigger('questions_update_sort', [$(event.target)[0].id, index]);
+        },
         //stats
         'click #add_series': function () {
             var series_params = {};
@@ -457,6 +482,14 @@ APP.view = Backbone.View.extend({
                 case "editor":
                     self.wait_for_questions(function () {
                         self.render({questions: self.question_list, categories: self.settings.categories});
+                        $('#questions').sortable({
+                            stop: function(event, ui) {
+                                ui.item.trigger('drop', ui.item.index());
+                            },
+                            placeholder: 'ui-state-highlight',
+                            helper: 'clone'
+                        });
+                        $('#questions').disableSelection();
                     });
                     break;
 

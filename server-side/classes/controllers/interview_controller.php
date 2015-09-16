@@ -3,8 +3,20 @@
 class interview_controller extends controller {
 
     public function get_questions_action($params) {
-        $q = db::exec($this->db, "SELECT id, content, category FROM i_questions", null);
+        $q = db::exec($this->db, "SELECT id, content, category, ordinal FROM i_questions ORDER BY ordinal", null);
         $this->view->render('json', $q);
+    }
+    
+    public function reorder_questions_action($params) {
+        $order = $params['order'];
+        $idx = 0;
+        foreach ($order as $id) {
+            db::exec($this->db, "UPDATE i_questions SET ordinal = :ordinal WHERE id = :id", [
+                ":ordinal" => ++$idx,
+                ":id" => $id,
+            ]);
+        }
+        $this->view->render('json', $order);
     }
 
     public function get_answers_action($params) {
