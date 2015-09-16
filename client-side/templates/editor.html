@@ -36,7 +36,7 @@
     <div class="large-12 columns" id="questions">
         <%questions.each(function (q) {%>
         <div id="<%=q.id%>" style="position: relative;" class="panel callout radius sortable question">
-            <a href="#!editor/<%=q.id%>/" class="button secondary tiny round tools"><span>&#9998;</span></a>
+            <a href="#!editor/<%=q.id%>/" class="button secondary tiny round tools edit"><span>&#9998;</span></a>
             <a class="button secondary tiny round tools question_delete"><span>X</span></a>
             <span class="<%=['success', '', 'alert'][q.get('category')]%> radius label"><%=categories[q.get("category")]%></span>
             

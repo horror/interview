@@ -340,6 +340,9 @@ APP.view = Backbone.View.extend({
             });
             $("#" + id).remove();
         },
+        'click .edit': function () {
+            window.scrollTo(0, 0);
+        },
         'questions_update_sort': function(event, id, position) {    
             var model = this.question_list.get(id);
             this.question_list.remove(model);
