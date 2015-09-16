@@ -53,3 +53,7 @@ input[type="text"]{
 .boolean { color: blue; }
 .null { color: magenta; }
 .key { color: red; }
+
+.tools span{
+    font-size: 150%;
+}

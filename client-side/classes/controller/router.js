@@ -5,7 +5,7 @@ APP.router = Backbone.Router.extend({
     routes: {
         "!questions/(:id/)": "show_questions",
         "!start/": "show_start",
-        "!editor/": "show_editor",
+        "!editor/(:id/)": "show_editor",
         "!stats/(:params/)": "show_stats",
         "!login/": "show_login",
         "!registr/": "show_registr",
@@ -21,12 +21,15 @@ APP.router = Backbone.Router.extend({
     },
     show_start: function () {
         this.view_state.set({
-            state: "start"
+            state: "start",
         });
     },
-    show_editor: function () {
+    show_editor: function (id) {
         this.view_state.set({
-            state: "editor"
+            state: "editor",
+            params: {
+                q_id: id,
+            }
         });
     },
     show_stats: function (params) {
@@ -58,8 +61,9 @@ APP.router = Backbone.Router.extend({
         start: function () {
             return "!start/"
         },
-        editor: function () {
-            return "!editor/"
+        editor: function (vs) {
+            var id = vs.get("params").q_id;
+            return "!editor/" + (id !== null ? (id + "/") : "");
         },
         stats: function (vs) {
             var p = vs.get("params");

@@ -50,18 +50,47 @@ class interview_controller extends controller {
         }
         $this->view->render('json', $data['meta']);
     }
-
-    public function add_question_action($params) {
-        $q = arr::extract($params, ['category', 'content', 'a']);
+    
+    private function add_question($q) {
         db::exec($this->db, "INSERT INTO i_questions (content, category) VALUES(:content, :category)", [':content' => $q['content'], ':category' => $q['category']]);
-        $curr_q = db::last_id($this->db);
+        return db::last_id($this->db);
+    }
+    
+    private function update_question($q) {
+        db::exec($this->db, "UPDATE i_questions SET content = :content, category = :category WHERE id = :id", [
+            ':content' => $q['content'], 
+            ':category' => $q['category'],
+            ':id' => $q['id'],
+        ]);
+        db::exec($this->db, "DELETE FROM i_answers WHERE question_id = :question_id", [
+            ':question_id' => $q['id'],
+        ]);
+        return $q['id'];
+    }
+
+    public function update_question_action($params) {
+        $q = arr::extract($params, ['category', 'content', 'a', 'id']);
+        
+        $id = ($q['id'] == null) ? $this->add_question($q) : $this->update_question($q);
+        
         if ($q['a'] == null)
             return;
+        
         foreach ($q['a'] as $a)
             db::exec($this->db, "INSERT INTO i_answers (question_id, content) VALUES(:question_id, :content)", [
-                ':question_id' => $curr_q,
+                ':question_id' => $id,
                 ':content' => $a,
             ]);
+    }
+    
+    public function delete_question_action($params) {
+        $id = $params['id'];
+        db::exec($this->db, "DELETE FROM i_questions WHERE id = :id", [
+            ':id' => $id,
+        ]);
+        db::exec($this->db, "DELETE FROM i_answers WHERE question_id = :question_id", [
+            ':question_id' => $id,
+        ]);
     }
 
     public function add_answer_action($params) {

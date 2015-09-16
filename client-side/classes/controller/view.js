@@ -312,25 +312,33 @@ APP.view = Backbone.View.extend({
         //editor
         'click #answer_add': function (event) {
             event.preventDefault();
-            $("#answers_list").append("\
-                <div class='answer_item'>\n\
-                    <input type='checkbox' name='answers' class='answer'>\n\
-                    <label>" + $("#answer_text").val() + "</label>\n\
-                </div>"
-                    );
-            $("#answer_text").val('');
+            this.add_answer_item($("#answer_text").val());
         },
         'click .answer_item': function (event) {
             $(event.currentTarget).remove();
         },
-        'click #question_add': function (event) {
-            //event.preventDefault();
+        'click #question_update': function (event) {
+            event.preventDefault();
             var q_text = $("#question_text").val();
             var answs = $(".answer_item label").map(function () {
                 return $(this).html();
             }).get();
             var c = $("#question_category").val();
-            $.post("/?controller=interview&action=add_question", {content: q_text, category: c, a: answs});
+            $.post("/?controller=interview&action=update_question", {
+                id: this.view_state.get('params').q_id, 
+                content: q_text, 
+                category: c, 
+                a: answs
+            });
+            window.location.reload();
+        },
+        'click .question_delete': function (event) {
+            event.preventDefault();
+            var id = $(event.target).parent()[0].id;
+            $.post("/?controller=interview&action=delete_question", {
+                id: id,
+            });
+            $("#" + id).remove();
         },
         'questions_update_sort': function(event, id, position) {    
             var model = this.question_list.get(id);
@@ -389,6 +397,15 @@ APP.view = Backbone.View.extend({
             this.update_url_params(APP.charts.settings());
             this.render({chart: APP.charts});
         },
+    },
+    add_answer_item: function (content) {
+        $("#answers_list").append("\
+            <div class='answer_item'>\n\
+                <input type='checkbox' name='answers' class='answer'>\n\
+                <label>" + content + "</label>\n\
+            </div>"
+                );
+        $("#answer_text").val('');
     },
     update_qestions: function () {
         var self = this;
@@ -490,6 +507,14 @@ APP.view = Backbone.View.extend({
                             helper: 'clone'
                         });
                         $('#questions').disableSelection();
+                        var q_id = self.view_state.get('params').q_id;
+                        if (q_id === null)
+                            return;
+                        var q = self.question_list.get(q_id);
+                        $("#question_category").val(q.get('category')).change();
+                        _.each(q.get('answers'), function (a) {
+                            self.add_answer_item(a.get("content"));
+                        })
                     });
                     break;
 

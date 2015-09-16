@@ -7,7 +7,7 @@
         </div>
         <div class="row">
             <div class="large-6 large-centered columns">
-                <textarea id="question_text"></textarea>
+                <textarea id="question_text"><%=p.q_id != null ? questions.get(p.q_id).get('content') : ''%></textarea>
                 <select id="question_category">
                 <%_.each(categories, function (name, id) {%>
                     <option value="<%=id%>"><%=name%></option>
@@ -27,15 +27,19 @@
                 <input style="float:right" type="text" name="answers" id="answer_text" placeholder="вариант ответа">
                 <a href="#" class="button secondary tiny" id="answer_add">Добавить ответ</a>
             </div>
+            
             <div class="small-12 small-centered columns text-center">
-                <a href="/#!editor/" class="button radius nav start" id="question_add">Добавить вопрос</a>
+                <a href="/interview.html#!editor/" class="button radius" id="question_update"><%=p.q_id == null ? 'Добавить' : 'Обновить'%> вопрос</a>
             </div>
         </div>
     </div>
     <div class="large-12 columns" id="questions">
         <%questions.each(function (q) {%>
         <div id="<%=q.id%>" style="position: relative;" class="panel callout radius sortable question">
+            <a href="#!editor/<%=q.id%>/" class="button secondary tiny round tools"><span>&#9998;</span></a>
+            <a class="button secondary tiny round tools question_delete"><span>X</span></a>
             <span class="<%=['success', '', 'alert'][q.get('category')]%> radius label"><%=categories[q.get("category")]%></span>
+            
             <%=q.get("content")%>
             <ul>
                 <%_.each(q.get("answers"), function (a) {%>
