@@ -103,7 +103,7 @@
             <div class="large-9 large-offset-3 columns">
                 <ul>
                     <%_.each(ans, function (a) {%>
-                    <%if (a == 0) return;%>
+                    <%if (a < 2) return;%>
                     <li><%=answers.get(a).get('content')%></li>
                     <%})%>
                 </ul>
