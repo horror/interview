@@ -34,7 +34,7 @@ class interview_controller extends controller {
         $curr_meta = db::last_id($this->db);
         $interview = $data["interview"];
         foreach ($interview as $i) {
-            if ($i["score"] != null) {
+            if (isset($i["score"]) && $i["score"] != null) {
                 db::exec($this->db, "INSERT INTO i_interview_scores (question_id, meta_id, score) VALUES(:question_id, :meta_id, :score)", [
                     ':question_id' => $i["question_id"],
                     ':meta_id' => $curr_meta,
