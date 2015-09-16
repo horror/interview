@@ -61,7 +61,7 @@
         <div class="row" id="answers_1" >
             <div class="large-9 large-offset-3 columns">
                 <a id="yes" href="#" class="button tiny success">Да</a>
-                <a id="no" href="#" class="button tiny secondary">Нет</a>    
+                <a id="no" href="#" class="button tiny alert">Нет</a>    
             </div>
         </div>
         <%}%>
@@ -97,7 +97,7 @@
                 <%if (interview.meta.answers_type*1 && q.get("answers").length > 0) {%>
                 <span class="info label"><%=score%> очков</span>
                 <%} else {%>
-                <span class="<%=(ans[0] == 1) ? 'success' : 'secondary' %> label"><%=(ans[0] == 1) ? 'Да' : 'Нет' %></span>
+                <span class="<%=(ans[0] == 1) ? 'success' : 'alert' %> label"><%=(ans[0] == 1) ? 'Да' : 'Нет' %></span>
                 <%}%>
             </div>
             <div class="large-9 large-offset-3 columns">
