@@ -455,7 +455,7 @@ APP.view = Backbone.View.extend({
 
                 case "editor":
                     self.wait_for_questions(function () {
-                        self.render({questions: self.question_list});
+                        self.render({questions: self.question_list, categories: self.settings.categories});
                     });
                     break;
 

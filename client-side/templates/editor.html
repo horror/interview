@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="large-9 columns panel">
+    <div class="large-12 columns panel">
         <div class="row">
             <div class="large-7 large-offset-2 columns">    
                 <h5>Вопрос</h5>
@@ -9,9 +9,9 @@
             <div class="large-6 large-centered columns">
                 <textarea id="question_text"></textarea>
                 <select id="question_category">
-                    <option value="0">Розница</option>
-                    <option value="1">Доставка</option>
-                    <option value="2">Интернет магазин</option>
+                <%_.each(categories, function (name, id) {%>
+                    <option value="<%=id%>"><%=name%></option>
+                <%});%>
                 </select>
             </div>
             <div class="large-7 large-offset-2 columns">    
@@ -32,9 +32,10 @@
             </div>
         </div>
     </div>
-    <div class="large-3 columns">
+    <div class="large-12 columns">
         <%questions.each(function (q) {%>
         <div class="panel callout radius">
+            <span class="<%=['success', '', 'alert'][q.get('category')]%> radius label"><%=categories[q.get("category")]%></span>
             <%=q.get("content")%>
             <ul>
                 <%_.each(q.get("answers"), function (a) {%>
