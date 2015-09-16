@@ -332,6 +332,18 @@ APP.view = Backbone.View.extend({
             var c = $("#question_category").val();
             $.post("/?controller=interview&action=add_question", {content: q_text, category: c, a: answs});
         },
+        'mousedown .dropable': function (event) {
+            $(event.currentTarget).detectDrag();
+        },
+        'dragstart .dropable': function (event, data, clone, element) {
+            
+        },
+        'dragend .dropable': function (event, clone, element) {
+            
+        },
+        'drop .dropable': function (event, data, clone, element) {
+            
+        },
         //stats
         'click #add_series': function () {
             var series_params = {};

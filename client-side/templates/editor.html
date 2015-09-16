@@ -34,7 +34,7 @@
     </div>
     <div class="large-12 columns">
         <%questions.each(function (q) {%>
-        <div class="panel callout radius">
+        <div class="panel callout radius dropable" draggable='true'>
             <span class="<%=['success', '', 'alert'][q.get('category')]%> radius label"><%=categories[q.get("category")]%></span>
             <%=q.get("content")%>
             <ul>
