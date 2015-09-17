@@ -9,7 +9,8 @@ requirejs.config({
         datepicker: 'vendors/foundation-datepicker.min',
         jqflot: 'vendors/jquery.flot',
         jqflotaddon: 'vendors/jquery.flot.axislabels',
-        jqflotpie: 'vendors/jquery.flot.pie'
+        jqflotpie: 'vendors/jquery.flot.pie',
+        details: 'vendors/details-shim',
     },
     shim: {
         underscore: {
@@ -25,6 +26,7 @@ requirejs.config({
 require([
     'underscore',
     'jquery',
+    'details',
 ], function () {
     require([
         'jqueryui',

@@ -74,7 +74,6 @@
                     </label>
                 </div>
 
-            </div>
             <div>
                 <label>Цвет</label>
                 <%
@@ -120,7 +119,7 @@
 
 <script>
     $("#parameter").change(function () {
-    $(".parameter_params").css("display", "none");
+            $(".parameter_params").css("display", "none");
             $("#" + $("#parameter").val() + "_params").css("display", "block");
     });
             $("#chart_type").val("<%=chart.chart_type%>");
@@ -176,6 +175,7 @@
     <% } %>
 
     $("#parameter").change();
+    details_shim.init();
     $("#shop option").remove();
     var shops_list = <%= JSON.stringify(_.union(settings.operator_shop_ref[0], settings.operator_shop_ref[1])) %>
     _.each(shops_list.sort(function(a, b) {

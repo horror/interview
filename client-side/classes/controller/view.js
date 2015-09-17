@@ -531,7 +531,7 @@ APP.view = Backbone.View.extend({
                         APP.charts.settings(self.view_state.get('params'));
                         self.render({chart: APP.charts});
                     });
-
+                    
                     break;
 
                 case "login":
