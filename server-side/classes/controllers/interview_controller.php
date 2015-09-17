@@ -10,12 +10,14 @@ class interview_controller extends controller {
     public function reorder_questions_action($params) {
         $order = $params['order'];
         $idx = 0;
+        db::begin_transaction($this->db);
         foreach ($order as $id) {
             db::exec($this->db, "UPDATE i_questions SET ordinal = :ordinal WHERE id = :id", [
                 ":ordinal" => ++$idx,
                 ":id" => $id,
             ]);
         }
+        db::commit($this->db);
         $this->view->render('json', $order);
     }
 

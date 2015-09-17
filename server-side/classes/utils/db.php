@@ -24,4 +24,11 @@ class db {
         return $handler->lastInsertId();
     }
 
+    public static function begin_transaction($handler) {
+        $handler->beginTransaction();
+    }
+    
+    public static function commit($handler) {
+        $handler->commit();
+    }
 }
