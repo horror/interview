@@ -119,21 +119,22 @@
 
 <script>
     $("#parameter").change(function () {
-            $(".parameter_params").css("display", "none");
-            $("#" + $("#parameter").val() + "_params").css("display", "block");
+            $(".parameter_params").addClass('not_visibe');
+            $("#" + $("#parameter").val() + "_params").removeClass('not_visible');
+            details_shim.init();
     });
             $("#chart_type").val("<%=chart.chart_type%>");
             <% if (chart.chart_type === "line") { %>
             $.plot("#plot", <%= JSON.stringify(chart.series) %> , {
-            series: {
-            bars: {
-            show: true,
+                series: {
+                bars: {
+                    show: true,
                     lineWidth: 0, // in pixels
                     barWidth: 0.9, // in units of the x axis
                     align: "center", // "left", "right", or "center"
                     horizontal: false,
                     zero: true,
-            }
+                }
             },
                     xaxes: [
                     { position: 'bottom', ticks: [
@@ -175,7 +176,6 @@
     <% } %>
 
     $("#parameter").change();
-    details_shim.init();
     $("#shop option").remove();
     var shops_list = <%= JSON.stringify(_.union(settings.operator_shop_ref[0], settings.operator_shop_ref[1])) %>
     _.each(shops_list.sort(function(a, b) {

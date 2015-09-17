@@ -57,3 +57,7 @@ input[type="text"]{
 .tools span{
     font-size: 150%;
 }
+
+.not_visible {
+    display: none;
+}
