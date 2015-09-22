@@ -299,6 +299,8 @@ APP.view = Backbone.View.extend({
                     location.href = "#!questions/";
                 else
                     $("#msg_block").html('<span class="alert round label">Вы не имеете доступа к этому магазину по данной дате обзвона</span>');
+            }).fail(function() {
+                location.href = "/";
             });
         },
         'change #operator_type': function () {
